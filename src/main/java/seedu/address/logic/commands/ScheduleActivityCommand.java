@@ -30,20 +30,20 @@ public class ScheduleActivityCommand extends ScheduleCommand {
 
     public static final String MESSAGE_USAGE = COMMAND_WORD + " " + SECOND_COMMAND_WORD + " "
             + ": Schedule the activity identified "
-            + "by the index number used in the displayed activity list"
+            + "by the index number used in the displayed activity list "
             + "to a day.\n"
             + "Parameters:"
             + PREFIX_ACTIVITY + "ACTIVITY_INDEX "
             + PREFIX_START_TIME + "START_TIME "
             + PREFIX_DURATION + "END_TIME "
             + PREFIX_DAY + "DAY_INDEX "
-            + "Example: " + COMMAND_WORD + " " + SECOND_COMMAND_WORD
+            + "Example: " + COMMAND_WORD + " " + SECOND_COMMAND_WORD + " "
             + PREFIX_ACTIVITY + "2 "
             + PREFIX_START_TIME + "1100 "
             + PREFIX_DURATION + "1300 "
             + PREFIX_DAY + "2 ";
 
-    public static final String MESSAGE_SCHEDULE_ACTIVITY_SUCCESS = "Activity scheduled to a day: %1$s";
+    public static final String MESSAGE_SCHEDULE_ACTIVITY_SUCCESS = "Activity scheduled to day %d";
     public static final String MESSAGE_DUPLICATE_DAY = "This day already exists in the planner.";
 
     private final Index activityIndex;
@@ -95,7 +95,7 @@ public class ScheduleActivityCommand extends ScheduleCommand {
 
         model.setDays(editedDays);
         model.updateFilteredDayList(PREDICATE_SHOW_ALL_DAYS);
-        return new CommandResult(String.format(MESSAGE_SCHEDULE_ACTIVITY_SUCCESS, editedDay));
+        return new CommandResult(String.format(MESSAGE_SCHEDULE_ACTIVITY_SUCCESS, dayIndex.getOneBased()));
     }
 
     private Day createScheduledActivityDay(Day dayToEdit, ActivityWithTime toAdd) {
