@@ -33,14 +33,13 @@ public class ScheduleActivityCommand extends ScheduleCommand {
             + "by the index number used in the displayed activity list "
             + "to a day.\n"
             + "Parameters:"
-            + PREFIX_ACTIVITY + "ACTIVITY_INDEX "
+            + "Parameters: INDEX (must be a positive integer) "
             + PREFIX_START_TIME + "START_TIME "
-            + PREFIX_DURATION + "END_TIME "
+            + PREFIX_DURATION + "DURATION "
             + PREFIX_DAY + "DAY_INDEX "
-            + "Example: " + COMMAND_WORD + " " + SECOND_COMMAND_WORD + " "
-            + PREFIX_ACTIVITY + "2 "
+            + "Example: " + COMMAND_WORD + " " + SECOND_COMMAND_WORD + " 1 "
             + PREFIX_START_TIME + "1100 "
-            + PREFIX_DURATION + "1300 "
+            + PREFIX_DURATION + "30 "
             + PREFIX_DAY + "2 ";
 
     public static final String MESSAGE_SCHEDULE_ACTIVITY_SUCCESS = "Activity scheduled to day %d";
@@ -83,7 +82,6 @@ public class ScheduleActivityCommand extends ScheduleCommand {
         Day dayToEdit = lastShownDays.get(dayIndex.getZeroBased());
         Activity activityToSchedule = lastShownActivities.get(activityIndex.getZeroBased());
         ActivityWithTime activityWithTimeToAdd = new ActivityWithTime(activityToSchedule, startTime, duration);
-
 
         Day editedDay = createScheduledActivityDay(dayToEdit, activityWithTimeToAdd);
         List<Day> editedDays = new ArrayList<>(lastShownDays);

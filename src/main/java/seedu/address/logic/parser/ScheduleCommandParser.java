@@ -1,5 +1,6 @@
 package seedu.address.logic.parser;
 
+import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.core.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ACTIVITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_DAY;
@@ -11,9 +12,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import seedu.address.commons.core.index.Index;
-import seedu.address.logic.commands.HelpCommand;
-import seedu.address.logic.commands.ScheduleActivityCommand;
-import seedu.address.logic.commands.ScheduleCommand;
+import seedu.address.logic.commands.*;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.day.time.DurationInHalfHour;
 import seedu.address.model.day.time.TimeInHalfHour;
@@ -63,16 +62,23 @@ public class ScheduleCommandParser {
      * @throws ParseException if the user input does not conform the expected format
      */
     private ScheduleActivityCommand parseActivity(String args) throws ParseException {
-        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_ACTIVITY, PREFIX_START_TIME,
+        requireNonNull(args);
+        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_START_TIME,
                 PREFIX_DURATION, PREFIX_DAY);
 
-        if (!arePrefixesPresent(argMultimap, PREFIX_ACTIVITY, PREFIX_START_TIME, PREFIX_DURATION, PREFIX_DAY)
-                || !argMultimap.getPreamble().isEmpty()) {
+        Index activityIndex;
+
+        try {
+            activityIndex = ParserUtil.parseIndex(argMultimap.getPreamble());
+        } catch (ParseException pe) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
-                    ScheduleActivityCommand.MESSAGE_USAGE));
+                    ScheduleActivityCommand.MESSAGE_USAGE), pe);
+        }
+        if (!arePrefixesPresent(argMultimap, PREFIX_START_TIME, PREFIX_DURATION, PREFIX_DAY)) {
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+                    EditActivityCommand.MESSAGE_USAGE));
         }
 
-        Index activityIndex = ParserUtil.parseIndex(argMultimap.getValue(PREFIX_ACTIVITY).get());
         TimeInHalfHour startTime = ParserUtil.parseTimeInHalfHour(argMultimap.getValue(PREFIX_START_TIME).get());
         DurationInHalfHour duration = ParserUtil.parseDurationInHalfHour(argMultimap.getValue(PREFIX_DURATION).get());
         Index dayIndex = ParserUtil.parseIndex(argMultimap.getValue(PREFIX_DAY).get());
