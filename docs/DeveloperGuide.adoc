@@ -335,6 +335,18 @@ Given below is a sequence diagram showing the execution of `ScheduleActivityComm
 .Sequence diagram showing how ScheduleActivityCommand executes.
 image::ScheduleActivityExecution.png[]
 
+==== Design Considerations
+
+===== Aspect: Update activities for that particular day
+
+* **Alternative 1 (current choice):** Create a new Day class with updated activity list for that day.
+** Pros: Easier for developer to test the code.
+** Cons: Might create unnecessary overheads in the code by creating new object every time we schedule an activity.
+* **Alternative 2:** Directly updates the activity list in the current Day class.
+** Pros: Seem more intuitive and simple to implement.
+** Cons: Might make it harder to debug if other functions/classes also depends on the same Day class.
+
+
 === Logging
 
 We are using `java.util.logging` package for logging. The `LogsCenter` class is used to manage the logging levels and logging destinations.
