@@ -1,11 +1,10 @@
-package seedu.address.testutil;
+package seedu.address.testutil.activity;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import seedu.address.logic.commands.EditActivityCommand.EditActivityDescriptor;
-import seedu.address.model.contact.Contact;
 import seedu.address.model.contact.Phone;
 import seedu.address.model.field.Address;
 import seedu.address.model.field.Name;

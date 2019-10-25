@@ -1,4 +1,4 @@
-package seedu.address.testutil;
+package seedu.address.testutil.activity;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,6 +11,7 @@ import seedu.address.model.field.Name;
 import seedu.address.model.itineraryitem.activity.Activity;
 import seedu.address.model.tag.Tag;
 import seedu.address.model.util.SampleDataUtil;
+import seedu.address.testutil.ContactBuilder;
 
 /**
  * A utility class to help with building Contact objects.

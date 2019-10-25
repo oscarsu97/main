@@ -1,4 +1,4 @@
-package seedu.address.testutil;
+package seedu.address.testutil.activity;
 
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
@@ -33,11 +33,9 @@ public class ActivityUtil {
         StringBuilder sb = new StringBuilder();
         sb.append(PREFIX_NAME + activity.getName().toString() + " ");
         sb.append(PREFIX_ADDRESS + activity.getAddress().toString() + " ");
-        activity.getContact().ifPresent(
-                contact -> sb.append(PREFIX_PHONE + contact.getPhone().toString() + " ")
+        activity.getContact().ifPresent(contact -> sb.append(PREFIX_PHONE + contact.getPhone().toString() + " ")
         );
-        activity.getTags().stream().forEach(
-                s -> sb.append(PREFIX_TAG + s.tagName + " ")
+        activity.getTags().stream().forEach(s -> sb.append(PREFIX_TAG + s.tagName + " ")
         );
         return sb.toString();
     }

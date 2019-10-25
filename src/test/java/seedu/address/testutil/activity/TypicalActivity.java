@@ -1,4 +1,4 @@
-package seedu.address.testutil;
+package seedu.address.testutil.activity;
 
 import static seedu.address.logic.commands.CommandTestUtil.VALID_ACTIVITY_ADDRESS_A;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_ACTIVITY_ADDRESS_B;
@@ -96,7 +96,7 @@ public class TypicalActivity {
                     "Gaara@example.com",
                     "Tennoji Ward, Osaka, 543-0017").build();
 
-    // Manually added - Contact's details found in {@code CommandTestUtil}
+    // Manually added - Activity's details found in {@code CommandTestUtil}
     public static final Activity ACTIVITY_A = new ActivityBuilder().withName(VALID_ACTIVITY_NAME_A)
             .withAddress(VALID_ACTIVITY_ADDRESS_A)
             .withContact(VALID_NAME_AMY, VALID_PHONE_AMY,
