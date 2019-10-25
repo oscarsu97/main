@@ -77,8 +77,8 @@ public class ActivityBuilder {
      * Sets the {@code Contact} of the {@code Activity} that we are building.
      */
     public ActivityBuilder withContact(String name, String phone, String email, String address, String... tags) {
-        this.contact = new Contact(new Name(name), new Phone(phone),
-                new Email(email), new Address(address), SampleDataUtil.getTagSet(tags));
+        this.contact = new ContactBuilder().withName(name).withEmail(email)
+                .withPhone(phone).withAddress(address).withTags(tags).build();
         return this;
     }
 
