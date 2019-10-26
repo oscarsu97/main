@@ -1,6 +1,7 @@
 package seedu.address.model.itineraryitem.activity;
 
 import java.time.Duration;
+import java.util.Optional;
 import java.util.Set;
 
 import seedu.address.model.contact.Contact;
@@ -31,8 +32,8 @@ public class Activity extends ItineraryItem {
         return duration.toMinutesPart();
     }
 
-    public Priority getPriority() {
-        return priority;
+    public Optional<Priority> getPriority() {
+        return Optional.ofNullable(priority);
     }
 
     /**
