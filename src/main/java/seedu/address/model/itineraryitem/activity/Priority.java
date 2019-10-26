@@ -10,7 +10,7 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 public class Priority {
 
     public static final String MESSAGE_CONSTRAINTS =
-            "Value of priority should be of an integer value";
+            "Value of priority should be of a long value";
 
     public final String priorityValue;
 
@@ -30,7 +30,7 @@ public class Priority {
      */
     public static boolean isValidPriority(String test) {
         try {
-            Integer.parseInt(test);
+            Long.parseLong(test);
             return true;
         } catch (NumberFormatException e) {
             return false;

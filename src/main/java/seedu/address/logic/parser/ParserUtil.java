@@ -2,6 +2,7 @@ package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -19,6 +20,7 @@ import seedu.address.model.contact.Phone;
 import seedu.address.model.day.Day;
 import seedu.address.model.field.Address;
 import seedu.address.model.field.Name;
+import seedu.address.model.itineraryitem.activity.Priority;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -27,6 +29,7 @@ import seedu.address.model.tag.Tag;
 public class ParserUtil {
 
     public static final String MESSAGE_INVALID_INDEX = "Index is not a non-zero unsigned integer.";
+    public static final String MESSAGE_INVALID_DURATION = "Duration is not a non-zero unsigned long value";
     private static final String DATE_FORMAT_1 = "d-M-yyyy";
     private static final String DATE_FORMAT_2 = "d-M-yy";
     private static final String TIME_FORMAT = "HHmm";
@@ -185,7 +188,7 @@ public class ParserUtil {
      *
      * @throws ParseException
      */
-    private static LocalDate parseByDateFormats(String trimmedDate, DateTimeFormatter ...dateFormats)
+    private static LocalDate parseByDateFormats(String trimmedDate, DateTimeFormatter... dateFormats)
             throws ParseException {
         LocalDate parsedDate = null;
         for (DateTimeFormatter format : dateFormats) {
@@ -209,9 +212,42 @@ public class ParserUtil {
     private static String acceptableDateFormats() {
         StringBuilder sb = new StringBuilder();
         sb.append("Date needs to be in either of the following formats: ")
-            .append(DATE_FORMAT_1)
-            .append(", ")
-            .append(DATE_FORMAT_2);
+                .append(DATE_FORMAT_1)
+                .append(", ")
+                .append(DATE_FORMAT_2);
         return sb.toString();
     }
+
+    /**
+     * Parses a {@code String min} into an {@code Duration}.
+     * Leading and trailing whitespaces will be trimmed.
+     *
+     * @throws ParseException
+     */
+    public static Duration parseDuration(String min) throws ParseException {
+        requireNonNull(min);
+        try {
+            String trimmedMin = min.trim();
+            Long duration = Long.parseLong(trimmedMin);
+            return Duration.ofMinutes(duration);
+        } catch (NumberFormatException e) {
+            throw new ParseException(MESSAGE_INVALID_DURATION);
+        }
+    }
+
+    /**
+     * Parses a {@code String priorityValue} into a {@code Priority}.
+     * Leading and trailing whitespaces will be trimmed.
+     *
+     * @throws ParseException if the given {@code priorityValue} is invalid.
+     */
+    public static Priority parsePriority(String priorityValue) throws ParseException {
+        requireNonNull(priorityValue);
+        String trimmedPriorityValue = priorityValue.trim();
+        if (!Priority.isValidPriority(trimmedPriorityValue)) {
+            throw new ParseException(Priority.MESSAGE_CONSTRAINTS);
+        }
+        return new Priority(priorityValue);
+    }
+
 }
