@@ -1,5 +1,6 @@
 package seedu.address.model.day;
 
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -54,7 +55,7 @@ public class Timetable {
                     }
                 } else {
                     if (toAdd.getStartTime().compareTo(floorActivity.getEndTime()) >= 0
-                        && toAdd.getEndTime().compareTo(ceilingActivity.getStartTime()) <= 0) {
+                            && toAdd.getEndTime().compareTo(ceilingActivity.getStartTime()) <= 0) {
                         this.timetable.add(toAdd);
                     } else {
                         throw new CommandException(MESSAGE_ACTIVITY_TIME_CONFLICT);
@@ -81,7 +82,8 @@ public class Timetable {
     }
 
     private Activity createEmptyActivity() {
-        return new Activity(new Name("activityStub"), new Address("addressStub"), null, new HashSet<Tag>());
+        return new Activity(new Name("activityStub"), new Address("addressStub"), null, new HashSet<Tag>(),
+                Duration.ZERO, null);
     }
 
     @Override
