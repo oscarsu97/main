@@ -7,6 +7,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_ACTIVITIES;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +24,7 @@ import seedu.address.model.contact.Phone;
 import seedu.address.model.field.Address;
 import seedu.address.model.field.Name;
 import seedu.address.model.itineraryitem.activity.Activity;
+import seedu.address.model.itineraryitem.activity.Priority;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -105,8 +107,8 @@ public class EditActivityCommand extends EditCommand {
         Contact updatedContact = editActivityDescriptor.getPhone().isPresent()
                 ? new Contact(updatedName, editActivityDescriptor.getPhone().get(), null, null, new HashSet<>())
                 : activityToEdit.getContact().isPresent()
-                    ? activityToEdit.getContact().get()
-                    : null;
+                ? activityToEdit.getContact().get()
+                : null;
         Set<Tag> updatedTags = editActivityDescriptor.getTags().orElse(activityToEdit.getTags());
 
         return new Activity(updatedName, updatedAddress, updatedContact, updatedTags);
@@ -140,8 +142,11 @@ public class EditActivityCommand extends EditCommand {
         private Address address;
         private Phone phone;
         private Set<Tag> tags;
+        private Duration duration;
+        private Priority priority;
 
-        public EditActivityDescriptor() {}
+        public EditActivityDescriptor() {
+        }
 
         public EditActivityDescriptor(EditActivityDescriptor toCopy) {
             setName(toCopy.name);
@@ -186,6 +191,22 @@ public class EditActivityCommand extends EditCommand {
             return (tags != null) ? Optional.of(Collections.unmodifiableSet(tags)) : Optional.empty();
         }
 
+        public void setDuration(Duration duration) {
+            this.duration = duration;
+        }
+
+        public Optional<Duration> getDuration() {
+            return Optional.ofNullable(duration);
+        }
+
+        public void setPriority(Priority priority) {
+            this.priority = priority;
+        }
+
+        public Optional<Priority> getPriority() {
+            return Optional.ofNullable(priority);
+        }
+
         @Override
         public boolean equals(Object other) {
             // short circuit if same object
@@ -204,7 +225,9 @@ public class EditActivityCommand extends EditCommand {
             return getName().equals(e.getName())
                     && getPhone().equals(e.getPhone())
                     && getAddress().equals(e.getAddress())
-                    && getTags().equals(e.getTags());
+                    && getTags().equals(e.getTags())
+                    && getDuration().equals(e.getDuration())
+                    && getPriority().equals(e.getPriority());
         }
     }
 }
