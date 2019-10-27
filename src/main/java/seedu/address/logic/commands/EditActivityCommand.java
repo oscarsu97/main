@@ -2,6 +2,7 @@ package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_DURATION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
@@ -39,7 +40,8 @@ public class EditActivityCommand extends EditCommand {
             + "Parameters: INDEX (must be a positive integer) "
             + "[" + PREFIX_NAME + "NAME] "
             + "[" + PREFIX_ADDRESS + "ADDRESS] "
-            + "[" + PREFIX_TAG + "TAG]...\n"
+            + "[" + PREFIX_TAG + "TAG]... "
+            + "[" + PREFIX_DURATION + "DURATION\n"
             + "Example: " + COMMAND_WORD + " 1 "
             + PREFIX_PHONE + "91234567 ";
 
@@ -110,8 +112,10 @@ public class EditActivityCommand extends EditCommand {
                 ? activityToEdit.getContact().get()
                 : null;
         Set<Tag> updatedTags = editActivityDescriptor.getTags().orElse(activityToEdit.getTags());
+        Duration updatedDuration = editActivityDescriptor.getDuration().get();
+        Priority updatedPriority = editActivityDescriptor.getPriority().get();
 
-        return new Activity(updatedName, updatedAddress, updatedContact, updatedTags);
+        return new Activity(updatedName, updatedAddress, updatedContact, updatedTags, updatedDuration, updatedPriority);
     }
 
     @Override
