@@ -3,6 +3,7 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_DURATION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
@@ -11,6 +12,7 @@ import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.contact.Contact;
 import seedu.address.model.itineraryitem.activity.Activity;
+import seedu.address.model.itineraryitem.activity.Priority;
 
 /**
  * Adds an activity to the itinerary.
@@ -24,11 +26,13 @@ public class AddActivityCommand extends AddCommand {
             + "Parameters: "
             + PREFIX_NAME + "NAME "
             + PREFIX_ADDRESS + "ADDRESS "
-            + "[" + PREFIX_TAG + "TAG]...\n"
+            + "[" + PREFIX_TAG + "TAG]..."
+            + PREFIX_DURATION + "DURATION\n"
             + "Example: add " + COMMAND_WORD + " "
             + PREFIX_NAME + "visit mt Fuji "
             + PREFIX_ADDRESS + "Mount Fuji "
-            + PREFIX_TAG + "sight-seeing";
+            + PREFIX_TAG + "sight-seeing "
+            + PREFIX_DURATION + "120";
 
     public static final String MESSAGE_SUCCESS = "New activity added: %1s";
     public static final String MESSAGE_DUPLICATE_ACTIVITY = "This activity already exists in the itinerary.";
@@ -63,16 +67,18 @@ public class AddActivityCommand extends AddCommand {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-
+        Priority priority = null;
         if (model.hasActivity(toAdd)) {
             throw new CommandException(MESSAGE_DUPLICATE_ACTIVITY);
         }
-
+        if (toAdd.getPriority().isPresent()) {
+            priority = toAdd.getPriority().get();
+        }
         if (toAdd.getContact().isPresent()) {
             if (model.hasPhone(toAdd.getContact().get().getPhone())) {
                 Contact contact = model.getContactByPhone(toAdd.getContact().get().getPhone()).get();
                 model.addActivity(new Activity(toAdd.getName(), toAdd.getAddress(), contact,
-                        toAdd.getTags()));
+                        toAdd.getTags(), toAdd.getDuration(), priority));
             } else {
                 if (index == null) {
                     model.addActivity(toAdd);

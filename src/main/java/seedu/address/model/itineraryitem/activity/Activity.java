@@ -28,8 +28,8 @@ public class Activity extends ItineraryItem {
         this.priority = priority;
     }
 
-    public Integer getDuration() {
-        return duration.toMinutesPart();
+    public Duration getDuration() {
+        return duration;
     }
 
     public Optional<Priority> getPriority() {
