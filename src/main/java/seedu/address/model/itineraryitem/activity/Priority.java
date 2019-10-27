@@ -5,53 +5,40 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 
 /**
  * Represents the priority of an Activity in the application.
- * Guarantees: immutable; is valid as declared in {@link #isValidPriority(String)}
+ * Guarantees: immutable;
  */
 public class Priority {
 
     public static final String MESSAGE_CONSTRAINTS =
-            "Value of priority should be of a long value";
+            "Value of priority should be a non-zero positive integer";
 
-    public final String priorityValue;
+    public final int priorityValue;
 
     /**
-     * Constructs a {@code Name}.
+     * Constructs a {@code Priority}.
      *
      * @param value A valid priority value.
      */
-    public Priority(String value) {
+    public Priority(int value) {
         requireNonNull(value);
-        checkArgument(isValidPriority(value), MESSAGE_CONSTRAINTS);
         this.priorityValue = value;
-    }
-
-    /**
-     * Returns true if a given string is a valid integer value.
-     */
-    public static boolean isValidPriority(String test) {
-        try {
-            Long.parseLong(test);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
     }
 
     @Override
     public String toString() {
-        return priorityValue;
+        return Integer.toString(priorityValue);
     }
 
     @Override
     public boolean equals(Object other) {
         return other == this // short circuit if same object
                 || (other instanceof Priority // instanceof handles nulls
-                && priorityValue.equals(((Priority) other).priorityValue)); // state check
+                && priorityValue == ((Priority) other).priorityValue); // state check
     }
 
     @Override
     public int hashCode() {
-        return priorityValue.hashCode();
+        return ((Integer) priorityValue).hashCode();
     }
 }
 

@@ -1,5 +1,6 @@
 package seedu.address.logic.commands;
 
+import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_DAY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
@@ -9,11 +10,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import seedu.address.model.Model;
+import seedu.address.model.day.Day;
 import seedu.address.model.field.Address;
 import seedu.address.model.field.Name;
+import seedu.address.model.itineraryitem.activity.Activity;
 import seedu.address.model.tag.Tag;
 
-public class AutoScheduleCommand {
+public class AutoScheduleCommand extends Command {
 
     public static final String COMMAND_WORD = "autoSchedule";
 
@@ -47,6 +51,15 @@ public class AutoScheduleCommand {
         this.draftSchedule = draftSchedule;
         this.address = address;
         this.days = days;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other == this
+                || (other instanceof AutoScheduleCommand
+                && draftSchedule.equals(((AutoScheduleCommand) other).draftSchedule))
+                && address.equals(((AutoScheduleCommand) other).address)
+                && days.equals((((AutoScheduleCommand) other).days));
     }
 
 }

@@ -113,7 +113,7 @@ public class EditActivityCommand extends EditCommand {
                 : null;
         Set<Tag> updatedTags = editActivityDescriptor.getTags().orElse(activityToEdit.getTags());
         Duration updatedDuration = editActivityDescriptor.getDuration().get();
-        Priority updatedPriority = editActivityDescriptor.getPriority().get();
+        Priority updatedPriority = editActivityDescriptor.getPriority();
 
         return new Activity(updatedName, updatedAddress, updatedContact, updatedTags, updatedDuration, updatedPriority);
     }
@@ -157,6 +157,8 @@ public class EditActivityCommand extends EditCommand {
             setAddress(toCopy.address);
             setPhone(toCopy.phone);
             setTags(toCopy.tags);
+            setDuration(toCopy.duration);
+            setPriority(toCopy.priority);
         }
 
         public boolean isAnyFieldEdited() {
@@ -207,8 +209,8 @@ public class EditActivityCommand extends EditCommand {
             this.priority = priority;
         }
 
-        public Optional<Priority> getPriority() {
-            return Optional.ofNullable(priority);
+        public Priority getPriority() {
+            return priority;
         }
 
         @Override

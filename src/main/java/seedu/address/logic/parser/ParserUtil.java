@@ -32,7 +32,9 @@ import seedu.address.model.tag.Tag;
 public class ParserUtil {
 
     public static final String MESSAGE_INVALID_INDEX = "Index is not a non-zero unsigned integer.";
-    public static final String MESSAGE_INVALID_DURATION = "Duration is not a non-zero unsigned long value";
+    public static final String MESSAGE_INVALID_DURATION = "Duration is not a non-zero unsigned positive long value";
+    public static final String MESSAGE_INVALID_PRIORITY = "Value of priority " +
+            "is not a non-zero unsigned positive integer.";
     private static final String DATE_FORMAT_1 = "d-M-yyyy";
     private static final String DATE_FORMAT_2 = "d-M-yy";
     private static final String TIME_FORMAT = "HHmm";
@@ -262,15 +264,20 @@ public class ParserUtil {
     /**
      * Parses a {@code String priorityValue} into a {@code Priority}.
      * Leading and trailing whitespaces will be trimmed.
+     * Ensures that priority value is a positive integer.
      *
      * @throws ParseException if the given {@code priorityValue} is invalid.
      */
     public static Priority parsePriority(String priorityValue) throws ParseException {
         requireNonNull(priorityValue);
-        String trimmedPriorityValue = priorityValue.trim();
-        if (!Priority.isValidPriority(trimmedPriorityValue)) {
-            throw new ParseException(Priority.MESSAGE_CONSTRAINTS);
+        try {
+            Integer trimmedPriorityValue = Integer.parseInt(priorityValue.trim());
+            if (trimmedPriorityValue <= 0) {
+                throw new ParseException(MESSAGE_INVALID_PRIORITY);
+            }
+            return new Priority(trimmedPriorityValue);
+        } catch (NumberFormatException e) {
+            throw new ParseException(MESSAGE_INVALID_PRIORITY);
         }
-        return new Priority(priorityValue);
     }
 }
