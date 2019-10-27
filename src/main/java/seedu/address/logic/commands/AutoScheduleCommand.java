@@ -5,6 +5,14 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import seedu.address.model.field.Address;
+import seedu.address.model.field.Name;
+import seedu.address.model.tag.Tag;
+
 public class AutoScheduleCommand {
 
     public static final String COMMAND_WORD = "autoSchedule";
@@ -30,5 +38,15 @@ public class AutoScheduleCommand {
             + PREFIX_DAY + "{DAY}...\n";
 
     public static final String MESSAGE_SUCCESS = "Schedule for the day generated!";
+
+    List<Object> draftSchedule;
+    Address address;
+    List<Integer> days;
+
+    public AutoScheduleCommand(List<Object> draftSchedule, Address address, List<Integer> days) {
+        this.draftSchedule = draftSchedule;
+        this.address = address;
+        this.days = days;
+    }
 
 }

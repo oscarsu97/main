@@ -7,8 +7,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import seedu.address.commons.core.index.Index;
@@ -154,6 +157,27 @@ public class ParserUtil {
     }
 
     /**
+     * Parses a {@code String days} into an {@code List<Integer>}.
+     * Leading and trailing whitespaces will be trimmed.
+     *
+     * @throws ParseException
+     */
+    public static List<Integer> parseDaysToSchedule(String days) throws ParseException {
+        requireNonNull(days);
+        String[] trimmmedDayList = days.trim().split(" ");
+        int numOfDays = trimmmedDayList.length;
+        List<Integer> dayList = new ArrayList<>();
+
+        for (int i = 0; i < numOfDays; i++) {
+            if (!Day.isValidDayNumber(trimmmedDayList[i])) {
+                throw new ParseException(Day.MESSAGE_CONSTRAINTS);
+            }
+            dayList.add(Integer.parseInt(trimmmedDayList[i]));
+        }
+        return dayList;
+    }
+
+    /**
      * Parses a {@code String time} into an {@code LocalTime}.
      * Leading and trailing whitespaces will be trimmed.
      *
@@ -249,5 +273,4 @@ public class ParserUtil {
         }
         return new Priority(priorityValue);
     }
-
 }
