@@ -71,9 +71,6 @@ public class AddActivityCommand extends AddCommand {
         if (model.hasActivity(toAdd)) {
             throw new CommandException(MESSAGE_DUPLICATE_ACTIVITY);
         }
-        if (toAdd.getPriority().isPresent()) {
-            priority = toAdd.getPriority().get();
-        }
         if (toAdd.getContact().isPresent()) {
             if (model.hasPhone(toAdd.getContact().get().getPhone())) {
                 Contact contact = model.getContactByPhone(toAdd.getContact().get().getPhone()).get();

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.AutoScheduleCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.field.Address;
@@ -34,7 +35,7 @@ public class AutoScheduleCommandParser {
         }
 
         Address address = null;
-        List<Integer> days = new ArrayList<>();
+        List<Index> days = new ArrayList<>();
         List<Object> draftSchedule;             //Contains either a Tag class or a Name class
 
         draftSchedule = getDraftSchedule(argMultimap, PREFIX_TAG, PREFIX_NAME);
@@ -53,10 +54,10 @@ public class AutoScheduleCommandParser {
         List<Object> draftSchedule = new ArrayList<>();
         for (PrefixArgument prefixArgument : filteredMultiMap) {
             if (prefixArgument.getPrefix().equals(PREFIX_TAG)) {
-                draftSchedule.add(ParserUtil.parseTag(prefixArgument.getArgValue()));
+                draftSchedule.add(ParserUtil.parseTagWithTime(prefixArgument.getArgValue()));
             }
             if (prefixArgument.getPrefix().equals(PREFIX_NAME)) {
-                draftSchedule.add(ParserUtil.parseName(prefixArgument.getArgValue()));
+                draftSchedule.add(ParserUtil.parseNameWithTime(prefixArgument.getArgValue()));
             }
         }
         return draftSchedule;

@@ -23,7 +23,9 @@ import seedu.address.model.contact.Phone;
 import seedu.address.model.day.Day;
 import seedu.address.model.field.Address;
 import seedu.address.model.field.Name;
+import seedu.address.model.itineraryitem.activity.NameWithTime;
 import seedu.address.model.itineraryitem.activity.Priority;
+import seedu.address.model.itineraryitem.activity.TagWithTime;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -69,6 +71,19 @@ public class ParserUtil {
             throw new ParseException(Name.MESSAGE_CONSTRAINTS);
         }
         return new Name(trimmedName);
+    }
+
+    public static NameWithTime parseNameWithTime(String argValue) {
+        requireNonNull(argValue);
+        String trimmedArgValue = argValue.trim();
+        String[] args = trimmedArgValue.split(" ");
+        try {
+            Integer time = Integer.parseInt(args[args.length - 1]);
+            String name = argValue.substring(0, args.length - 5);
+            return new NameWithTime(new Name(name), time);
+        } catch (NumberFormatException e) {
+            return new NameWithTime(new Name(argValue), null);
+        }
     }
 
     /**
@@ -131,6 +146,20 @@ public class ParserUtil {
         return new Tag(trimmedTag);
     }
 
+    public static TagWithTime parseTagWithTime(String argValue) {
+        requireNonNull(argValue);
+        String trimmedArgValue = argValue.trim();
+        String[] args = trimmedArgValue.split(" ");
+        try {
+            Integer time = Integer.parseInt(args[args.length - 1]);
+
+            String tag = argValue.substring(0, args.length - 5);
+            return new TagWithTime(new Tag(tag), time);
+        } catch (NumberFormatException e) {
+            return new TagWithTime(new Tag(argValue), null);
+        }
+    }
+
     /**
      * Parses {@code Collection<String> tags} into a {@code Set<Tag>}.
      */
@@ -164,17 +193,17 @@ public class ParserUtil {
      *
      * @throws ParseException
      */
-    public static List<Integer> parseDaysToSchedule(String days) throws ParseException {
+    public static List<Index> parseDaysToSchedule(String days) throws ParseException {
         requireNonNull(days);
-        String[] trimmmedDayList = days.trim().split(" ");
-        int numOfDays = trimmmedDayList.length;
-        List<Integer> dayList = new ArrayList<>();
+        String[] trimmmedDays = days.trim().split(" ");
+        int numOfDays = trimmmedDays.length;
+        List<Index> dayList = new ArrayList<>();
 
         for (int i = 0; i < numOfDays; i++) {
-            if (!Day.isValidDayNumber(trimmmedDayList[i])) {
+            if (!Day.isValidDayNumber(trimmmedDays[i])) {
                 throw new ParseException(Day.MESSAGE_CONSTRAINTS);
             }
-            dayList.add(Integer.parseInt(trimmmedDayList[i]));
+            dayList.add(parseIndex(trimmmedDays[i]));
         }
         return dayList;
     }
