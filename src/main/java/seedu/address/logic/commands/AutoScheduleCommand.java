@@ -1,10 +1,10 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_DAY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_DAYS;
 
 import java.time.LocalTime;
@@ -21,18 +21,18 @@ import seedu.address.model.day.Day;
 import seedu.address.model.field.Address;
 import seedu.address.model.itineraryitem.activity.Activity;
 import seedu.address.model.itineraryitem.activity.NameWithTime;
-import seedu.address.model.itineraryitem.activity.TagWithTime;
+import seedu.address.model.tag.TagWithTime;
 
+/**
+ * Generates a schedule for specified day(s).
+ */
 public class AutoScheduleCommand extends Command {
 
     public static final String COMMAND_WORD = "autoSchedule";
 
-    private static final String TIME_FORMAT = "HHmm";
-    public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern(TIME_FORMAT);
-    public static final Integer DEFAULT_START_TIME = 900;
+    public static final String TIME_FORMAT = "HHmm";
     public static final String MESSAGE_INVALID_SCHEDULE = "Unnable to generate a schedule based on the requirements";
     public static final String MESSAGE_SCHEDULE_ACTIVITY_SUCCESS = "Activities successfully scheduled.";
-
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Generates a list of activities for a specified day based on tag order given by user."
             + "Parameters: "
@@ -52,12 +52,13 @@ public class AutoScheduleCommand extends Command {
             + PREFIX_TAG + "Dining 1800 "
             + PREFIX_ADDRESS + "Tokyo "
             + PREFIX_DAY + "{DAY}...\n";
-
     public static final String MESSAGE_SUCCESS = "Schedule for the day generated!";
+    public static final Integer DEFAULT_START_TIME = 900;
+    public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern(TIME_FORMAT);
 
-    List<Object> draftSchedule;
-    Address address;
-    List<Index> days;
+    private List<Object> draftSchedule;
+    private Address address;
+    private List<Index> days;
 
     public AutoScheduleCommand(List<Object> draftSchedule, Address address, List<Index> days) {
         this.draftSchedule = draftSchedule;
@@ -102,7 +103,8 @@ public class AutoScheduleCommand extends Command {
                 //Gets all activities that has the same name
                 if (draftSchedule.get(i) instanceof NameWithTime) {
                     similarActivities =
-                            getActivitiesWithSameName(filteredActivitiesByLocation, (NameWithTime) draftSchedule.get(i));
+                            getActivitiesWithSameName(filteredActivitiesByLocation,
+                                    (NameWithTime) draftSchedule.get(i));
                 }
 
                 //ActivityCount represents an activity and the number of times it appears in the timetable
@@ -122,7 +124,8 @@ public class AutoScheduleCommand extends Command {
                     //The last activity do not have to worry about overlap with another activity
                     if (i == draftSchedule.size() - 1) {
                         isScheduled = true;
-                        activitiesForTheDay.add(activityToSchedule(timeSchedule.get(i), duration, activityWithCount.getActivity()));
+                        activitiesForTheDay.add(activityToSchedule(timeSchedule.get(i), duration,
+                                activityWithCount.getActivity()));
                         break;
                     }
 
@@ -138,7 +141,8 @@ public class AutoScheduleCommand extends Command {
                     // No timing is given by user for the entire autoschedule command
                     if (nextTimingIndex == -1) {
                         isScheduled = true;
-                        activitiesForTheDay.add(activityToSchedule(timeSchedule.get(i), duration, activityWithCount.getActivity()));
+                        activitiesForTheDay.add(activityToSchedule(timeSchedule.get(i),
+                                duration, activityWithCount.getActivity()));
                         timeSchedule.set(i + 1, currentTiming + duration);
                         break;
                         //check next timing does not overlap
@@ -149,7 +153,8 @@ public class AutoScheduleCommand extends Command {
                         int nextTiming = currentTiming + hour + min;
                         if (nextTiming <= 0) {
                             isScheduled = true;
-                            activitiesForTheDay.add(activityToSchedule(timeSchedule.get(i), duration, activityWithCount.getActivity()));
+                            activitiesForTheDay.add(activityToSchedule(timeSchedule.get(i),
+                                    duration, activityWithCount.getActivity()));
                             //the next activity will be given a start time,
                             // if the timing is not the next in line
                             //Eg. 1000 null 1300 -> becomes 1000 1000+30min  1300
@@ -173,14 +178,23 @@ public class AutoScheduleCommand extends Command {
         return new CommandResult(String.format(MESSAGE_SCHEDULE_ACTIVITY_SUCCESS));
     }
 
+    /**
+     * Creates an ActivityWithTime to be scheduled.
+     *
+     * @param activity activity to be scheduled
+     */
     private ActivityWithTime activityToSchedule(Integer currentTiming, int duration, Activity activity) {
         LocalTime startTime = LocalTime.parse(currentTiming.toString(), TIME_FORMATTER);
         LocalTime endTime = LocalTime.parse((currentTiming + duration) + "", TIME_FORMATTER);
         return new ActivityWithTime(activity, startTime, endTime);
     }
-    /*return new CommandResult(String.format(MESSAGE_SUCCESS, toAdd));*/
 
-
+    /**
+     * Generates a list containing all activities with counts representing the number of the same activity that exist
+     * in the itinerary.
+     *
+     * @param activitiesForTheDay list of activities that are generated by auto-scheduling
+     */
     private List<ActivityWithCount> updateActivitiesCount(List<Activity> similarActivities, List<Day> lastShownDays,
                                                           List<ActivityWithTime> activitiesForTheDay, Index dayToEdit) {
         List<ActivityWithCount> activityCounts = new ArrayList<>();
@@ -209,6 +223,11 @@ public class AutoScheduleCommand extends Command {
         return activityCounts;
     }
 
+    /**
+     * Creates a list to track the time of each activity to be carried out.
+     *
+     * @param draftSchedule The order in with the type of activity to be carried out
+     */
     private List<Integer> fillTimeSchedule(List<Object> draftSchedule) {
         List<Integer> timeSchedule = new ArrayList<>();
         for (int i = 0; i < draftSchedule.size(); i++) {
@@ -228,6 +247,9 @@ public class AutoScheduleCommand extends Command {
         return timeSchedule;
     }
 
+    /**
+     * @return List of activities that has the same name specified
+     */
     private List<Activity> getActivitiesWithSameName(List<Activity> filteredActivitiesByLocation, NameWithTime name) {
         List<Activity> similarActivities = new ArrayList<>();
         for (Activity activity : filteredActivitiesByLocation) {
@@ -238,6 +260,9 @@ public class AutoScheduleCommand extends Command {
         return similarActivities;
     }
 
+    /**
+     * @return list of activities that has the same tag specified.
+     */
     private List<Activity> getActivitiesWithSameTag(List<Activity> filteredActivitiesByLocation, TagWithTime tag) {
         List<Activity> similarActivities = new ArrayList<>();
         for (Activity activity : filteredActivitiesByLocation) {
@@ -248,6 +273,9 @@ public class AutoScheduleCommand extends Command {
         return similarActivities;
     }
 
+    /**
+     * @return list of all days to genaerate a schedule for
+     */
     private List<Index> daysToSchedule(int size) {
         List<Index> dayIndexes = new ArrayList<>();
         for (int i = 1; i <= size; i++) {
@@ -256,6 +284,9 @@ public class AutoScheduleCommand extends Command {
         return dayIndexes;
     }
 
+    /**
+     * @return list of activities that has the same location specified.
+     */
     private List<Activity> filterActivitiesByLocation(List<Activity> lastShownActivities, String address) {
         List<Activity> filteredList = new ArrayList<>();
         for (Activity activity : lastShownActivities) {

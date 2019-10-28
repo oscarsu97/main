@@ -41,9 +41,12 @@ public class JsonAdaptedActivity {
      * Constructs a {@code JsonAdaptedActivity} with the given activity details.
      */
     @JsonCreator
-    public JsonAdaptedActivity(@JsonProperty("name") String name, @JsonProperty("address") String address,
-                               @JsonProperty("contact") JsonAdaptedContact contact, @JsonProperty("tagged") List<JsonAdaptedTag> tagged,
-                               @JsonProperty("duration") String duration, @JsonProperty("priority") String priority) {
+    public JsonAdaptedActivity(@JsonProperty("name") String name,
+                               @JsonProperty("address") String address,
+                               @JsonProperty("contact") JsonAdaptedContact contact,
+                               @JsonProperty("tagged") List<JsonAdaptedTag> tagged,
+                               @JsonProperty("duration") String duration,
+                               @JsonProperty("priority") String priority) {
         this.name = name;
         this.address = address;
         this.contact = contact;
@@ -98,7 +101,8 @@ public class JsonAdaptedActivity {
         final Set<Tag> modelTags = new HashSet<>(activityTags);
 
         if (duration == null) {
-            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Duration.class.getSimpleName()));
+            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT,
+                    Duration.class.getSimpleName()));
         }
         if (!StringUtil.isNonZeroUnsignedInteger(duration) && (Integer.parseInt(duration) >= 0)) {
             throw new IllegalValueException(String.format(Duration.MESSAGE_CONSTRAINTS));

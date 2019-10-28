@@ -1,11 +1,12 @@
-package seedu.address.model.itineraryitem.activity;
+package seedu.address.model.tag;
 
 import static java.util.Objects.requireNonNull;
 
-import java.time.LocalTime;
+import seedu.address.model.itineraryitem.activity.NameWithTime;
 
-import seedu.address.model.tag.Tag;
-
+/**
+ * Class to contain a Tag class and the timing to be scheduled.
+ */
 public class TagWithTime {
     public static final String MESSAGE_CONSTRAINTS =
             "Value of priority should be a non-zero positive integer";

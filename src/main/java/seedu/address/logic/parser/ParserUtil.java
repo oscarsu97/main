@@ -24,8 +24,8 @@ import seedu.address.model.field.Name;
 import seedu.address.model.itineraryitem.activity.Duration;
 import seedu.address.model.itineraryitem.activity.NameWithTime;
 import seedu.address.model.itineraryitem.activity.Priority;
-import seedu.address.model.itineraryitem.activity.TagWithTime;
 import seedu.address.model.tag.Tag;
+import seedu.address.model.tag.TagWithTime;
 
 /**
  * Contains utility methods used for parsing strings in the various *Parser classes.
@@ -34,8 +34,8 @@ public class ParserUtil {
 
     public static final String MESSAGE_INVALID_INDEX = "Index is not a non-zero unsigned integer.";
     public static final String MESSAGE_INVALID_DURATION = "Duration is not a non-zero unsigned positive long value";
-    public static final String MESSAGE_INVALID_PRIORITY = "Value of priority " +
-            "is not a non-zero unsigned positive integer.";
+    public static final String MESSAGE_INVALID_PRIORITY = "Value of priority "
+            + "is not a non-zero unsigned positive integer.";
     private static final String DATE_FORMAT_1 = "d-M-yyyy";
     private static final String DATE_FORMAT_2 = "d-M-yy";
     private static final String TIME_FORMAT = "HHmm";
@@ -72,6 +72,10 @@ public class ParserUtil {
         return new Name(trimmedName);
     }
 
+    /**
+     * Parses a {@code String argValue} into a {@code NameWithTime}.
+     * Leading and trailing whitespaces will be trimmed.
+     */
     public static NameWithTime parseNameWithTime(String argValue) {
         requireNonNull(argValue);
         String trimmedArgValue = argValue.trim();
@@ -145,6 +149,10 @@ public class ParserUtil {
         return new Tag(trimmedTag);
     }
 
+    /**
+     * Parses a {@code String argValue} into a {@code TagWithTime}.
+     * Leading and trailing whitespaces will be trimmed.
+     */
     public static TagWithTime parseTagWithTime(String argValue) {
         requireNonNull(argValue);
         String trimmedArgValue = argValue.trim();

@@ -2,10 +2,11 @@ package seedu.address.model.itineraryitem.activity;
 
 import static java.util.Objects.requireNonNull;
 
-import java.time.LocalTime;
-
 import seedu.address.model.field.Name;
 
+/**
+ * Class to contain an activity Name and the timing to be scheduled.
+ */
 public class NameWithTime {
     public static final String MESSAGE_CONSTRAINTS =
             "Value of priority should be a non-zero positive integer";

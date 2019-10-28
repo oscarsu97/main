@@ -3,6 +3,8 @@ package seedu.address.model.itineraryitem.activity;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
 
+import seedu.address.commons.util.StringUtil;
+
 /**
  * Represents the priority of an Activity in the application.
  * Guarantees: immutable;
@@ -21,7 +23,15 @@ public class Priority {
      */
     public Priority(int value) {
         requireNonNull(value);
+        checkArgument(isValidPriority(value), MESSAGE_CONSTRAINTS);
         this.priorityValue = value;
+    }
+
+    /**
+     * Returns true if a given integer is a valid priority value.
+     */
+    public static boolean isValidPriority(Integer test) {
+        return StringUtil.isNonZeroUnsignedInteger(test.toString()) && (test >= 0);
     }
 
     @Override

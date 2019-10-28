@@ -5,6 +5,10 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 
 import seedu.address.commons.util.StringUtil;
 
+/**
+ * Represents the duration of an Activity in the application.
+ * Guarantees: immutable;
+ */
 public class Duration {
     public static final String MESSAGE_CONSTRAINTS =
             "Value of duration should be a non-zero positive integer";

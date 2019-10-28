@@ -36,7 +36,8 @@ public class AutoScheduleCommandParser {
 
         Address address = null;
         List<Index> days = new ArrayList<>();
-        List<Object> draftSchedule;             //Contains either a Tag class or a Name class
+        //Contains either a Tag class or a Name class
+        List<Object> draftSchedule;
 
         draftSchedule = getDraftSchedule(argMultimap, PREFIX_TAG, PREFIX_NAME);
         if (argMultimap.getValue(PREFIX_ADDRESS).isPresent()) {

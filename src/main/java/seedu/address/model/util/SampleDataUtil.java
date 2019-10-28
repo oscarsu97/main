@@ -59,17 +59,23 @@ public class SampleDataUtil {
     public static Activity[] getSampleActivities() {
         return new Activity[]{
                 new Activity(new Name("Alex Yeoh"), new Address("Blk 30 Geylang Street 29, #06-40"),
-                        null, getTagSet("friends"), new Duration(30), new Priority(1)),
+                        null, getTagSet("friends"),
+                        new Duration(30), new Priority(1)),
                 new Activity(new Name("Bernice Yu"), new Address("Blk 30 Lorong 3 Serangoon Gardens, #07-18"),
-                        null, getTagSet("colleagues", "friends"), new Duration(30), new Priority(2)),
+                        null, getTagSet("colleagues", "friends"),
+                        new Duration(30), new Priority(2)),
                 new Activity(new Name("Charlotte Oliveiro"), new Address("Blk 11 Ang Mo Kio Street 74, #11-04"),
-                        null, getTagSet("neighbours"), new Duration(30), new Priority(3)),
+                        null, getTagSet("neighbours"),
+                        new Duration(30), new Priority(3)),
                 new Activity(new Name("David Li"), new Address("Blk 436 Serangoon Gardens Street 26, #16-43"),
-                        null, getTagSet("family"), new Duration(30), new Priority(4)),
+                        null, getTagSet("family"),
+                        new Duration(30), new Priority(4)),
                 new Activity(new Name("Irfan Ibrahim"), new Address("Blk 47 Tampines Street 20, #17-35"),
-                        null, getTagSet("classmates"), new Duration(30), new Priority(5)),
+                        null, getTagSet("classmates"),
+                        new Duration(30), new Priority(5)),
                 new Activity(new Name("Roy Balakrishnan"), new Address("Blk 45 Aljunied Street 85, #11-31"),
-                        null, getTagSet("colleagues"), new Duration(30), new Priority(6))
+                        null, getTagSet("colleagues"),
+                        new Duration(30), new Priority(6))
         };
     }
 
