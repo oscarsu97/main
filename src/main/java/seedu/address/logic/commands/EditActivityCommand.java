@@ -8,12 +8,13 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_ACTIVITIES;
 
-import java.time.Duration;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import javax.swing.text.html.Option;
 
 import seedu.address.commons.core.Messages;
 import seedu.address.commons.core.index.Index;
@@ -25,6 +26,7 @@ import seedu.address.model.contact.Phone;
 import seedu.address.model.field.Address;
 import seedu.address.model.field.Name;
 import seedu.address.model.itineraryitem.activity.Activity;
+import seedu.address.model.itineraryitem.activity.Duration;
 import seedu.address.model.itineraryitem.activity.Priority;
 import seedu.address.model.tag.Tag;
 
@@ -112,8 +114,8 @@ public class EditActivityCommand extends EditCommand {
                 ? activityToEdit.getContact().get()
                 : null;
         Set<Tag> updatedTags = editActivityDescriptor.getTags().orElse(activityToEdit.getTags());
-        Duration updatedDuration = editActivityDescriptor.getDuration().get();
-        Priority updatedPriority = editActivityDescriptor.getPriority();
+        Duration updatedDuration = editActivityDescriptor.getDuration().orElse(activityToEdit.getDuration());
+        Priority updatedPriority = editActivityDescriptor.getPriority().orElse(activityToEdit.getPriority());
 
         return new Activity(updatedName, updatedAddress, updatedContact, updatedTags, updatedDuration, updatedPriority);
     }
@@ -209,8 +211,8 @@ public class EditActivityCommand extends EditCommand {
             this.priority = priority;
         }
 
-        public Priority getPriority() {
-            return priority;
+        public Optional<Priority> getPriority() {
+            return Optional.ofNullable(priority);
         }
 
         @Override

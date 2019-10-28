@@ -10,7 +10,6 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PRIORITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
-import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -31,6 +30,7 @@ import seedu.address.model.field.Address;
 import seedu.address.model.field.Name;
 import seedu.address.model.itineraryitem.accommodation.Accommodation;
 import seedu.address.model.itineraryitem.activity.Activity;
+import seedu.address.model.itineraryitem.activity.Duration;
 import seedu.address.model.itineraryitem.activity.Priority;
 import seedu.address.model.tag.Tag;
 

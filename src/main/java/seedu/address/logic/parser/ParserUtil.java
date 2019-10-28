@@ -2,7 +2,6 @@ package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -11,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import seedu.address.commons.core.index.Index;
@@ -23,6 +21,7 @@ import seedu.address.model.contact.Phone;
 import seedu.address.model.day.Day;
 import seedu.address.model.field.Address;
 import seedu.address.model.field.Name;
+import seedu.address.model.itineraryitem.activity.Duration;
 import seedu.address.model.itineraryitem.activity.NameWithTime;
 import seedu.address.model.itineraryitem.activity.Priority;
 import seedu.address.model.itineraryitem.activity.TagWithTime;
@@ -283,8 +282,8 @@ public class ParserUtil {
         requireNonNull(min);
         try {
             String trimmedMin = min.trim();
-            Long duration = Long.parseLong(trimmedMin);
-            return Duration.ofMinutes(duration);
+            Integer duration = Integer.parseInt(trimmedMin);
+            return new Duration(duration);
         } catch (NumberFormatException e) {
             throw new ParseException(MESSAGE_INVALID_DURATION);
         }

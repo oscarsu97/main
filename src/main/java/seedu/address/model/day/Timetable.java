@@ -1,6 +1,5 @@
 package seedu.address.model.day;
 
-import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -13,6 +12,7 @@ import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.field.Address;
 import seedu.address.model.field.Name;
 import seedu.address.model.itineraryitem.activity.Activity;
+import seedu.address.model.itineraryitem.activity.Duration;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -83,7 +83,7 @@ public class Timetable {
 
     private Activity createEmptyActivity() {
         return new Activity(new Name("activityStub"), new Address("addressStub"), null, new HashSet<Tag>(),
-                Duration.ZERO, null);
+                new Duration(30), null);
     }
 
     @Override

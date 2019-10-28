@@ -117,7 +117,7 @@ public class AutoScheduleCommand extends Command {
                 //Main entry of execution
                 //Checks if duration exceed the next timing if any
                 for (ActivityWithCount activityWithCount : activitiesWithCount) {
-                    int duration = activityWithCount.getActivity().getDuration().toMinutesPart();
+                    int duration = activityWithCount.getActivity().getDuration().value;
 
                     //The last activity do not have to worry about overlap with another activity
                     if (i == draftSchedule.size() - 1) {

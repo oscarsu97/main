@@ -1,7 +1,5 @@
 package seedu.address.model.itineraryitem.activity;
 
-import java.time.Duration;
-import java.util.Optional;
 import java.util.Set;
 
 import seedu.address.model.contact.Contact;
