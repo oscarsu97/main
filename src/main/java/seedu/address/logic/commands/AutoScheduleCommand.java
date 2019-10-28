@@ -26,6 +26,7 @@ import seedu.address.model.itineraryitem.activity.TagWithTime;
 public class AutoScheduleCommand extends Command {
 
     public static final String COMMAND_WORD = "autoSchedule";
+
     private static final String TIME_FORMAT = "HHmm";
     public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern(TIME_FORMAT);
     public static final Integer DEFAULT_START_TIME = 900;
@@ -186,8 +187,8 @@ public class AutoScheduleCommand extends Command {
         for (Activity similarActivity : similarActivities) {
             int count = 0;
             //number of times the activities appear in other days
-            for (int i = 0; i < lastShownDays.size(); i++){
-                if (i == dayToEdit.getZeroBased()){
+            for (int i = 0; i < lastShownDays.size(); i++) {
+                if (i == dayToEdit.getZeroBased()) {
                     continue;
                 }
                 List<ActivityWithTime> activities = lastShownDays.get(i).getListOfActivityWithTime();
