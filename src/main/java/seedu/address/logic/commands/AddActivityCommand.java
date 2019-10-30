@@ -66,7 +66,7 @@ public class AddActivityCommand extends AddCommand {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        Priority priority = null;
+
         if (model.hasActivity(toAdd)) {
             throw new CommandException(MESSAGE_DUPLICATE_ACTIVITY);
         }
@@ -74,7 +74,7 @@ public class AddActivityCommand extends AddCommand {
             if (model.hasPhone(toAdd.getContact().get().getPhone())) {
                 Contact contact = model.getContactByPhone(toAdd.getContact().get().getPhone()).get();
                 model.addActivity(new Activity(toAdd.getName(), toAdd.getAddress(), contact,
-                        toAdd.getTags(), toAdd.getDuration(), priority));
+                        toAdd.getTags(), toAdd.getDuration(), toAdd.getPriority()));
             } else {
                 if (index == null) {
                     model.addActivity(toAdd);
