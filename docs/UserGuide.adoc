@@ -49,6 +49,8 @@ e.g. typing *`help`* and pressing kbd:[Enter] will open the help window.
 * Items in square brackets are optional e.g `n/NAME [t/TAG]` can be used as `n/Eat lunch t/Western` or as `n/Eat lunch`.
 * Items with `…`​ after them can be used multiple times including zero times e.g. `[t/TAG]...` can be used as `{nbsp}` (i.e. 0 times), `t/friend`, `t/friend t/family` etc.
 * Parameters can be in any order e.g. if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
+* Any two items enclosed within with `()` and has a `||` lying between them indicates that either one of the items has to be present.
+e.g. `(t/Dining || n/DisneyLand)` can be used as `t/Dining` or `n/DisneyLand`.
 ====
 
 === Viewing help : `help`
@@ -255,11 +257,14 @@ Examples:
 This removes the activity at 2300 from day 1 of the itinerary.
 
 === Auto Schedule: `auto Schedule`
-Generate a list of activities for the specified days based on tags or name.
+Generates a list of activities for the specified days based on tags or name.
 Timing can be specified if there is an activity that is confirmed to do at that timing.
 An `activity name` can be specified if there is an activity that has been confirmed to do.
 Location for that `day` can be specified, otherwise it is assumed to be any location.
 The `Day` to schedule for can be specified, otherwise it is assumed to be scheduled for all days.
+
+Format:
+* `autoSchedule (t/TAG... || n/ACTIVITY_NAME...) a/ADDRESS [d/DAY_INDEX]...`
 
 Examples:
 
@@ -289,12 +294,12 @@ Format: `undo`
 Redo by one action +
 Format: `redo`
 
-=== Look up history of inputs: `history`
+=== Look up history of inputs: `history`[Work in progress]
 
 Lists the inputs that have been entered +
 Format: `history`
 
-=== Saving the data: `save`
+=== Saving the data: `save`[Work in progress]
 
 Saves the state of the program. If provided with a schedule name, it will add a new file with the schedule name. Else, it will simply save it to the current save file +
 Format: `save [SCHEDULE_NAME]`
@@ -303,7 +308,7 @@ Examples:
 
 * `save japan_trip`
 
-=== Loading the data: `load`
+=== Loading the data: `load`[Work in progress]
 
 The user can load the desired schedule with the schedule name. Else, the user can add a new schedule +
 Format: `load SCHEDULE_NAME`
@@ -312,7 +317,7 @@ Examples:
 
 * `load beijing`
 
-=== Export schedule: `export`
+=== Export schedule: `export`[Work in progress]
 
 Exports the schedule into a pdf +
 Format: `export`
