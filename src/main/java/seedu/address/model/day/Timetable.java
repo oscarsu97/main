@@ -33,7 +33,6 @@ public class Timetable {
         if (activities.size() > 0) {
             Iterator<ActivityWithTime> activitiesIterator = activities.iterator();
             this.timetable.add(activitiesIterator.next());
-
             while (activitiesIterator.hasNext()) {
                 ActivityWithTime toAdd = activitiesIterator.next();
                 ActivityWithTime floorActivity = this.timetable.floor(toAdd);

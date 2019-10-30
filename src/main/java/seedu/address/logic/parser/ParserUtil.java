@@ -82,7 +82,7 @@ public class ParserUtil {
         String[] args = trimmedArgValue.split(" ");
         try {
             Integer time = Integer.parseInt(args[args.length - 1]);
-            String name = argValue.substring(0, args.length - 5);
+            String name = argValue.substring(0, argValue.length() - 5);
             return new NameWithTime(new Name(name), time);
         } catch (NumberFormatException e) {
             return new NameWithTime(new Name(argValue), null);
@@ -159,8 +159,7 @@ public class ParserUtil {
         String[] args = trimmedArgValue.split(" ");
         try {
             Integer time = Integer.parseInt(args[args.length - 1]);
-
-            String tag = argValue.substring(0, args.length - 5);
+            String tag = argValue.substring(0, argValue.length() - 5);
             return new TagWithTime(new Tag(tag), time);
         } catch (NumberFormatException e) {
             return new TagWithTime(new Tag(argValue), null);

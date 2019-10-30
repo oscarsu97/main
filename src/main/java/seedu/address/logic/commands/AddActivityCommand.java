@@ -27,10 +27,10 @@ public class AddActivityCommand extends AddCommand {
             + PREFIX_ADDRESS + "ADDRESS "
             + "[" + PREFIX_TAG + "TAG]..."
             + PREFIX_DURATION + "DURATION\n"
-            + "Example: add " + COMMAND_WORD + " "
+            + "Example: " + COMMAND_WORD + " " + SECOND_COMMAND_WORD + " "
             + PREFIX_NAME + "visit mt Fuji "
             + PREFIX_ADDRESS + "Mount Fuji "
-            + PREFIX_TAG + "sight-seeing "
+            + PREFIX_TAG + "sightseeing "
             + PREFIX_DURATION + "120";
 
     public static final String MESSAGE_SUCCESS = "New activity added: %1s";

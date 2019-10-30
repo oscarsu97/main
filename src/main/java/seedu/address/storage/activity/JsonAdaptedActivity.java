@@ -28,7 +28,7 @@ import seedu.address.storage.contact.JsonAdaptedContact;
 public class JsonAdaptedActivity {
 
     public static final String MISSING_FIELD_MESSAGE_FORMAT = "Activity's %s field is missing!";
-    private static final int LOWEST_PRIORITY = -1;
+    private static final int LOWEST_PRIORITY = 0;
 
     private final String name;
     private final String address;

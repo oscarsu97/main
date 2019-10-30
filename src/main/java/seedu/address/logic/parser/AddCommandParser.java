@@ -40,7 +40,7 @@ import seedu.address.model.tag.Tag;
 public class AddCommandParser implements Parser<AddCommand> {
 
     private static final Pattern ADD_COMMAND_FORMAT = Pattern.compile("(?<type>\\S+)(?<arguments>.*)");
-    private static final int LOWEST_PRIORITY = -1;
+    private static final int LOWEST_PRIORITY = 0;
     /**
      * Parses the given {@code String} of arguments in the context of the AddCommand
      * and returns an AddCommand object for execution.
@@ -56,7 +56,6 @@ public class AddCommandParser implements Parser<AddCommand> {
 
         final String type = matcher.group("type");
         final String arguments = matcher.group("arguments");
-
         switch (type) {
         case AddAccommodationCommand.SECOND_COMMAND_WORD:
             return parseAccommodation(arguments);

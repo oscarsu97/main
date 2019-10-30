@@ -76,4 +76,8 @@ public class ArgumentMultimap {
     public String getPreamble() {
         return getValue(new Prefix("")).orElse("");
     }
+
+    public void add(PrefixArgument prefixArgument) {
+        orderedArgMultiMap.add(prefixArgument);
+    }
 }

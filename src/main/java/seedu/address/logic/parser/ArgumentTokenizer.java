@@ -46,7 +46,6 @@ public class ArgumentTokenizer {
      */
     private static List<PrefixPosition> findPrefixPositions(String argsString, Prefix prefix) {
         List<PrefixPosition> positions = new ArrayList<>();
-
         int prefixPosition = findPrefixPosition(argsString, prefix.getPrefix(), 0);
         while (prefixPosition != -1) {
             PrefixPosition extendedPrefix = new PrefixPosition(prefix, prefixPosition);
@@ -104,6 +103,7 @@ public class ArgumentTokenizer {
             Prefix argPrefix = prefixPositions.get(i).getPrefix();
             String argValue = extractArgumentValue(argsString, prefixPositions.get(i), prefixPositions.get(i + 1));
             argMultimap.put(argPrefix, argValue);
+            argMultimap.add(new PrefixArgument(argPrefix, argValue));
         }
 
         return argMultimap;
@@ -120,7 +120,6 @@ public class ArgumentTokenizer {
 
         int valueStartPos = currentPrefixPosition.getStartPosition() + prefix.getPrefix().length();
         String value = argsString.substring(valueStartPos, nextPrefixPosition.getStartPosition());
-
         return value.trim();
     }
 
