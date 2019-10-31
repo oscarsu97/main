@@ -32,7 +32,7 @@ import seedu.address.model.tag.TagWithTime;
  */
 public class AutoScheduleCommand extends Command {
 
-    public static final String COMMAND_WORD = "autoSchedule";
+    public static final String COMMAND_WORD = "autoschedule";
 
     public static final String TIME_FORMAT = "HHmm";
     public static final String MESSAGE_INVALID_SCHEDULE = "Unnable to generate a schedule based on the requirements";
