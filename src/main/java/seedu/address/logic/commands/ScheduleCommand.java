@@ -36,11 +36,9 @@ public class ScheduleCommand extends Command {
             COMMAND_WORD + " "
             + "ACTIVITY_INDEX (must be a positive integer) "
             + PREFIX_START_TIME + "START_TIME "
-            + PREFIX_END_TIME + "END_TIME "
             + PREFIX_DAY + "DAY_INDEX ",
             COMMAND_WORD + " 1 "
             + PREFIX_START_TIME + "1100 "
-            + PREFIX_END_TIME + "1300 "
             + PREFIX_DAY + "2 ");
 
     public static final String MESSAGE_SCHEDULE_ACTIVITY_SUCCESS = "Activity scheduled to day %d";
