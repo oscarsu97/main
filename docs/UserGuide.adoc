@@ -256,7 +256,7 @@ Generates a list of activities for the specified days based on tags or name.
 
 * The `Day` to schedule for can be specified, otherwise it is assumed to be scheduled for all days.
 
-Format: `autoSchedule (t/TAG... || n/ACTIVITY_NAME...) [a/ADDRESS] d/[DAY_INDEX]...`
+Format: `autoSchedule (t/TAG || n/ACTIVITY_NAME)... [a/LOCATION_OF_ACTIVITIES] d/[DAY_INDEX]...`
 
 Examples:
 
