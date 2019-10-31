@@ -52,8 +52,8 @@ public class AutoScheduleCommand extends Command {
     );
 
     public static final String MESSAGE_SUCCESS = "Schedule for the day(s) generated!";
-    public static final Integer DEFAULT_START_TIME = 900;
     public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern(TIME_FORMAT);
+    public static final LocalTime DEFAULT_START_TIME = LocalTime.parse("0900", TIME_FORMATTER);
 
     private List<Object> draftSchedule;
     private Address address;
@@ -77,7 +77,7 @@ public class AutoScheduleCommand extends Command {
         for (Index dayIndex : days) {
             List<Activity> lastShownActivities = model.getFilteredActivityList();
             List<Activity> filteredActivitiesByLocation = lastShownActivities;
-            List<Integer> timeSchedule = fillTimeSchedule(draftSchedule);
+            List<LocalTime> timeSchedule = fillTimeSchedule(draftSchedule);
             List<ActivityWithTime> activitiesForTheDay = new ArrayList<>();
             // Gets the list of activities that has the location specified by user
             if (address != null) {
@@ -115,18 +115,17 @@ public class AutoScheduleCommand extends Command {
                 //Checks if duration exceed the next timing if any
                 for (ActivityWithCount activityWithCount : activitiesWithCount) {
                     int duration = activityWithCount.getActivity().getDuration().value;
-                    int hour = (duration / 60) * 100;
-                    int min = duration - 60 * (duration / 60);
+
                     //The last activity do not have to worry about overlap with another activity
                     if (i == draftSchedule.size() - 1) {
                         isScheduled = true;
-                        activitiesForTheDay.add(activityToSchedule(timeSchedule.get(i), hour, min,
+                        activitiesForTheDay.add(activityToSchedule(timeSchedule.get(i), duration,
                                 activityWithCount.getActivity()));
                         break;
                     }
                     //find the next timing if any given by user
                     int nextTimingIndex = -1;
-                    int currentTiming = timeSchedule.get(i);
+                    LocalTime currentTiming = timeSchedule.get(i);
                     for (int k = i + 1; k < timeSchedule.size(); k++) {
                         if (timeSchedule.get(k) != null) {
                             nextTimingIndex = k;
@@ -135,18 +134,18 @@ public class AutoScheduleCommand extends Command {
                     // No timing is given by user for the entire autoschedule command
                     if (nextTimingIndex == -1) {
                         isScheduled = true;
-                        activitiesForTheDay.add(activityToSchedule(timeSchedule.get(i),
-                                hour, min, activityWithCount.getActivity()));
-                        timeSchedule.set(i + 1, currentTiming + hour + min);
+                        activitiesForTheDay.add(activityToSchedule(timeSchedule.get(i), duration,
+                                activityWithCount.getActivity()));
+                        timeSchedule.set(i + 1, currentTiming.plusMinutes(duration));
                         break;
                         //check next timing does not overlap
                     } else {
-                        int startTimeOfNextActivity = timeSchedule.get(nextTimingIndex);
-                        int currentActivityEndTime = currentTiming + hour + min;
-                        if (startTimeOfNextActivity - currentActivityEndTime >= 0) {
+                        LocalTime startTimeOfNextActivity = timeSchedule.get(nextTimingIndex);
+                        LocalTime currentActivityEndTime = currentTiming.plusMinutes(duration);
+                        if (startTimeOfNextActivity.compareTo(currentActivityEndTime)>= 0) {
                             isScheduled = true;
                             activitiesForTheDay.add(activityToSchedule(timeSchedule.get(i),
-                                    hour, min, activityWithCount.getActivity()));
+                                    duration, activityWithCount.getActivity()));
                             //the next activity will be given a start time,
                             // if the timing is not the next in line
                             //Eg. 1000 null 1300 -> becomes 1000 1000+30min  1300
@@ -175,10 +174,9 @@ public class AutoScheduleCommand extends Command {
      *
      * @param activity activity to be scheduled
      */
-    private ActivityWithTime activityToSchedule(Integer currentTiming, int hour, int min, Activity activity) {
-        LocalTime startTime = LocalTime.parse(String.format("%04d", currentTiming), TIME_FORMATTER);
-        LocalTime endTime = LocalTime.parse(String.format("%04d", currentTiming + hour + min), TIME_FORMATTER);
-        return new ActivityWithTime(activity, startTime, endTime);
+    private ActivityWithTime activityToSchedule(LocalTime currentTime, int duration, Activity activity) {
+        LocalTime endTime = currentTime.plusMinutes(duration);
+        return new ActivityWithTime(activity, currentTime, endTime);
     }
 
     /**
@@ -220,10 +218,10 @@ public class AutoScheduleCommand extends Command {
      *
      * @param draftSchedule The order in with the type of activity to be carried out
      */
-    private List<Integer> fillTimeSchedule(List<Object> draftSchedule) {
-        List<Integer> timeSchedule = new ArrayList<>();
+    private List<LocalTime> fillTimeSchedule(List<Object> draftSchedule) {
+        List<LocalTime> timeSchedule = new ArrayList<>();
         for (int i = 0; i < draftSchedule.size(); i++) {
-            Integer time = null;
+            LocalTime time = null;
             if (draftSchedule.get(i) instanceof TagWithTime) {
                 time = ((TagWithTime) draftSchedule.get(i)).getTime();
             }
