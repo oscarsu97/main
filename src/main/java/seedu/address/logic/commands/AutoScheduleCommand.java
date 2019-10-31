@@ -51,7 +51,7 @@ public class AutoScheduleCommand extends Command {
                 + PREFIX_ADDRESS + "Tokyo " + PREFIX_DAY + "1 4 5"
     );
 
-    public static final String MESSAGE_SUCCESS = "Schedule for the day generated!";
+    public static final String MESSAGE_SUCCESS = "Schedule for the day(s) generated!";
     public static final Integer DEFAULT_START_TIME = 900;
     public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern(TIME_FORMAT);
 
