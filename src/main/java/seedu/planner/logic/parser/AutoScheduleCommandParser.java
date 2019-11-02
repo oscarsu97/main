@@ -52,7 +52,8 @@ public class AutoScheduleCommandParser {
         return new AutoScheduleCommand(draftSchedule, address, days);
     }
 
-    private List<NameAndTagWithTime> getDraftSchedule(ArgumentMultimap argumentMultimap, Prefix... prefixes) throws ParseException {
+    private List<NameAndTagWithTime> getDraftSchedule(ArgumentMultimap argumentMultimap,
+                                                      Prefix... prefixes) throws ParseException {
         List<PrefixArgument> filteredMultiMap = argumentMultimap.getFilteredArgMultiMap(prefixes);
         List<NameAndTagWithTime> draftSchedule = new ArrayList<>();
 

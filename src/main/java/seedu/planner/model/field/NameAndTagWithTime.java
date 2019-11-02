@@ -7,6 +7,9 @@ import java.util.Optional;
 import seedu.planner.logic.commands.util.CommandUtil;
 import seedu.planner.model.tag.Tag;
 
+/**
+ * Represents a Name or Tag with a timing tagged to it.
+ */
 public class NameAndTagWithTime {
     private final Name name;
     private final Tag tag;
@@ -26,7 +29,8 @@ public class NameAndTagWithTime {
     public Optional<Tag> getTag() {
         return Optional.ofNullable(tag);
     }
-    public LocalTime getTime(){
+
+    public LocalTime getTime() {
         return time;
     }
 

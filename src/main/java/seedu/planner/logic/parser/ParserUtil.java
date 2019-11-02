@@ -70,6 +70,12 @@ public class ParserUtil {
         return new Name(trimmedName);
     }
 
+    /**
+     * Parses a {@code String argValue} into a {@code NameAndTagWithTime}.
+     * Leading and trailing whitespaces will be trimmed.
+     *
+     * @throws ParseException if the given {@code phone} is invalid.
+     */
     public static NameAndTagWithTime parseNameAndTagWithTime(String argValue, Prefix prefix) throws ParseException {
         requireNonNull(argValue);
         String trimmedArgValue = argValue.trim();
