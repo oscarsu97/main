@@ -298,7 +298,7 @@ public class AutoScheduleCommand extends UndoableCommand {
     private List<Activity> getActivitiesWithSameTag(List<Activity> filteredActivitiesByLocation, TagWithTime tag) {
         List<Activity> similarActivities = new ArrayList<>();
         for (Activity activity : filteredActivitiesByLocation) {
-            if (activity.getTags().contains(tag.getTag())) {
+            if (activity.getTags().equals(tag.getTag())) {
                 similarActivities.add(activity);
             }
         }
@@ -322,7 +322,7 @@ public class AutoScheduleCommand extends UndoableCommand {
     private List<Activity> filterActivitiesByLocation(List<Activity> lastShownActivities, String address) {
         List<Activity> filteredList = new ArrayList<>();
         for (Activity activity : lastShownActivities) {
-            if (activity.getAddress().toString().contains(address)) {
+            if (activity.getAddress().equals(address)) {
                 filteredList.add(activity);
             }
         }

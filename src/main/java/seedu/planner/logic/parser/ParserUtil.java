@@ -78,17 +78,19 @@ public class ParserUtil {
         requireNonNull(argValue);
         String trimmedArgValue = argValue.trim();
         String[] args = trimmedArgValue.split(" ");
-        try {
-            Integer.parseInt(args[args.length - 1]);
-        } catch (NumberFormatException e) {
+
+        assert args.length > 0;
+
+        if (args.length > 1) {
+            try {
+                LocalTime parsedTime = LocalTime.parse(args[args.length - 1], TIME_FORMATTER);
+                String name = trimmedArgValue.substring(0, trimmedArgValue.length() - 5);
+                return new NameWithTime(new Name(name), parsedTime);
+            } catch (DateTimeParseException e) {
+                throw new ParseException("Please input a time of this format: " + TIME_FORMAT);
+            }
+        } else {
             return new NameWithTime(new Name(trimmedArgValue), null);
-        }
-        try {
-            LocalTime parsedTime = LocalTime.parse(args[args.length - 1], TIME_FORMATTER);
-            String name = trimmedArgValue.substring(0, trimmedArgValue.length() - 5);
-            return new NameWithTime(new Name(name), parsedTime);
-        } catch (DateTimeParseException e) {
-            throw new ParseException("Time format is: " + TIME_FORMAT);
         }
     }
 
@@ -160,17 +162,19 @@ public class ParserUtil {
         requireNonNull(argValue);
         String trimmedArgValue = argValue.trim();
         String[] args = trimmedArgValue.split(" ");
-        try {
-            Integer.parseInt(args[args.length - 1]);
-        } catch (NumberFormatException e) {
+
+        assert args.length > 0;
+
+        if (args.length > 1) {
+            try {
+                LocalTime parsedTime = LocalTime.parse(args[args.length - 1], TIME_FORMATTER);
+                String tag = trimmedArgValue.substring(0, trimmedArgValue.length() - 5);
+                return new TagWithTime(new Tag(tag), parsedTime);
+            } catch (DateTimeParseException e) {
+                throw new ParseException("Please input a time of this format: " + TIME_FORMAT);
+            }
+        } else {
             return new TagWithTime(new Tag(trimmedArgValue), null);
-        }
-        try {
-            LocalTime parsedTime = LocalTime.parse(args[args.length - 1], TIME_FORMATTER);
-            String tag = trimmedArgValue.substring(0, trimmedArgValue.length() - 5);
-            return new TagWithTime(new Tag(tag), parsedTime);
-        } catch (DateTimeParseException e) {
-            throw new ParseException("Time format is: " + TIME_FORMAT);
         }
     }
 
@@ -231,7 +235,7 @@ public class ParserUtil {
     public static LocalTime parseTime(String time) throws ParseException {
         requireNonNull(time);
         String trimmedTime = time.trim();
-        LocalTime parsedTime = null;
+        LocalTime parsedTime;
         try {
             parsedTime = LocalTime.parse(trimmedTime, TIME_FORMATTER);
         } catch (DateTimeParseException e) {
