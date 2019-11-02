@@ -39,7 +39,7 @@ public class AutoScheduleCommand extends UndoableCommand {
 
     public static final String TIME_FORMAT = "HHmm";
     public static final String MESSAGE_INVALID_SCHEDULE = "Unable to generate a schedule"
-            + " with no overlapping activitiies";
+            + " with no overlapping activities";
     public static final String MESSAGE_SCHEDULE_ACTIVITY_SUCCESS = "Activities successfully scheduled.";
     public static final String MESSAGE_ACTIVITY_TAG_NOT_FOUND = "Activity with this tag %s not found";
     public static final String MESSAGE_ACTIVITY_NAME_NOT_FOUND = "Activity with this name %s not found";
@@ -52,7 +52,7 @@ public class AutoScheduleCommand extends UndoableCommand {
             COMMAND_WORD + " (" + PREFIX_TAG + "TAG [START_TIME] || "
                     + PREFIX_NAME + "ACTIVITY_NAME [START_TIME])... "
                     + "[" + PREFIX_ADDRESS + "LOCATION_OF_ACTIVITIES] "
-                    + "[" +     PREFIX_DAY + "DAY_INDEX...]",
+                    + "[" + PREFIX_DAY + "DAY_INDEX...]",
             COMMAND_WORD + " " + PREFIX_TAG + "Dining 1000 " + PREFIX_TAG + "Attraction 1200 "
                     + PREFIX_NAME + "Disneyland 1400 " + PREFIX_TAG + "Dining "
                     + PREFIX_ADDRESS + "Tokyo " + PREFIX_DAY + "1 4 5"
@@ -94,7 +94,7 @@ public class AutoScheduleCommand extends UndoableCommand {
         requireNonNull(model);
         List<Day> lastShownDays = model.getFilteredItinerary();
 
-        if (lastShownDays.size() == 0){
+        if (lastShownDays.size() == 0) {
             throw new CommandException(Messages.MESSAGE_NO_DAYS_AVAILABLE);
         }
 
@@ -107,6 +107,9 @@ public class AutoScheduleCommand extends UndoableCommand {
             List<LocalTime> timeSchedule = fillTimeSchedule(draftSchedule);
             List<ActivityWithTime> activitiesForTheDay = new ArrayList<>();
 
+            if (dayIndex.getZeroBased() >= lastShownDays.size()) {
+                throw new CommandException(Messages.MESSAGE_INVALID_DAY_DISPLAYED_INDEX);
+            }
             if (address != null) {
                 filteredActivitiesByLocation = filterActivitiesByLocation(lastShownActivities, address.toString());
                 if (filteredActivitiesByLocation.size() == 0) {
@@ -126,19 +129,12 @@ public class AutoScheduleCommand extends UndoableCommand {
                     TagWithTime tagWithTime = (TagWithTime) draftSchedule.get(i);
                     similarActivities =
                             getActivitiesWithSameTag(newActivityListByLocation, tagWithTime);
-                    if (similarActivities.size() == 0) {
-                        throw new CommandException(String.format(MESSAGE_ACTIVITY_TAG_NOT_FOUND,
-                                tagWithTime.getTag()));
-                    }
+
                 }
                 if (draftSchedule.get(i) instanceof NameWithTime) {
                     NameWithTime nameWithTime = (NameWithTime) draftSchedule.get(i);
                     similarActivities =
                             getActivitiesWithSameName(newActivityListByLocation, nameWithTime);
-                    if (similarActivities.size() == 0) {
-                        throw new CommandException(String.format(MESSAGE_ACTIVITY_NAME_NOT_FOUND,
-                                nameWithTime.getName()));
-                    }
                 }
 
                 List<ActivityWithCount> activitiesWithCount =
@@ -287,12 +283,17 @@ public class AutoScheduleCommand extends UndoableCommand {
     /**
      * @return List of activities that has the same name specified
      */
-    private List<Activity> getActivitiesWithSameName(List<Activity> filteredActivitiesByLocation, NameWithTime name) {
+    private List<Activity> getActivitiesWithSameName(List<Activity> filteredActivitiesByLocation,
+                                                     NameWithTime nameWithTime) throws CommandException {
         List<Activity> similarActivities = new ArrayList<>();
         for (Activity activity : filteredActivitiesByLocation) {
-            if (activity.getName().equals(name.getName())) {
+            if (activity.getName().equals(nameWithTime.getName())) {
                 similarActivities.add(activity);
             }
+        }
+        if (similarActivities.size() == 0) {
+            throw new CommandException(String.format(MESSAGE_ACTIVITY_NAME_NOT_FOUND,
+                    nameWithTime.getName()));
         }
         return similarActivities;
     }
@@ -300,12 +301,17 @@ public class AutoScheduleCommand extends UndoableCommand {
     /**
      * @return list of activities that has the same tag specified.
      */
-    private List<Activity> getActivitiesWithSameTag(List<Activity> filteredActivitiesByLocation, TagWithTime tag) {
+    private List<Activity> getActivitiesWithSameTag(List<Activity> filteredActivitiesByLocation,
+                                                    TagWithTime tagWithTime) throws CommandException {
         List<Activity> similarActivities = new ArrayList<>();
         for (Activity activity : filteredActivitiesByLocation) {
-            if (activity.getTags().contains(tag.getTag())) {
+            if (activity.getTags().contains(tagWithTime.getTag())) {
                 similarActivities.add(activity);
             }
+        }
+        if (similarActivities.size() == 0) {
+            throw new CommandException(String.format(MESSAGE_ACTIVITY_TAG_NOT_FOUND,
+                    tagWithTime.getTag()));
         }
         return similarActivities;
     }
