@@ -46,12 +46,12 @@ public class AutoScheduleCommand extends UndoableCommand {
 
     public static final HelpExplanation MESSAGE_USAGE = new HelpExplanation(
             COMMAND_WORD,
-            "Generates a list of activities for a specified day based on location, "
+            "Generates a list of activities for specified days based on location, "
                     + " tags and names order given by user.",
-            COMMAND_WORD + " ([" + PREFIX_TAG + "TAG START_TIME] || "
-                    + PREFIX_NAME + "ACTIVITY_NAME START_TIME])... "
-                    + PREFIX_ADDRESS + "LOCATION_OF_ACTIVITIES "
-                    + PREFIX_DAY + "[DAY_INDEX]...",
+            COMMAND_WORD + " (" + PREFIX_TAG + "TAG [START_TIME] || "
+                    + PREFIX_NAME + "ACTIVITY_NAME [START_TIME])... "
+                    + "[" + PREFIX_ADDRESS + "LOCATION_OF_ACTIVITIES] "
+                    + "[" +PREFIX_DAY + "DAY_INDEX...]",
             COMMAND_WORD + " " + PREFIX_TAG + "Dining 1000 " + PREFIX_TAG + "Attraction 1200 "
                     + PREFIX_NAME + "Disneyland 1400 " + PREFIX_TAG + "Dining "
                     + PREFIX_ADDRESS + "Tokyo " + PREFIX_DAY + "1 4 5"
@@ -93,7 +93,6 @@ public class AutoScheduleCommand extends UndoableCommand {
         requireNonNull(model);
         List<Day> lastShownDays = model.getFilteredItinerary();
 
-        //If user did not indicate which day(s) to auto schedule, it is assumed to schedule for all days
         if (days.size() == 0) {
             days = daysToSchedule(lastShownDays.size());
         }
@@ -102,7 +101,7 @@ public class AutoScheduleCommand extends UndoableCommand {
             List<Activity> filteredActivitiesByLocation = lastShownActivities;
             List<LocalTime> timeSchedule = fillTimeSchedule(draftSchedule);
             List<ActivityWithTime> activitiesForTheDay = new ArrayList<>();
-            // Gets the list of activities that has the location specified by user
+
             if (address != null) {
                 filteredActivitiesByLocation = filterActivitiesByLocation(lastShownActivities, address.toString());
                 if (filteredActivitiesByLocation.size() == 0) {
@@ -114,12 +113,10 @@ public class AutoScheduleCommand extends UndoableCommand {
             Collections.sort(newActivityListByLocation);
 
             //draftSchedule contains TagWithTime and NameWithTime in the same order given by user
-            //Eg. t/Activity 1000  n/DisneyLand 1200  t/Activity   t/Dining 1800
             for (int i = 0; i < draftSchedule.size(); i++) {
                 List<Activity> similarActivities = new ArrayList<>();
                 boolean isScheduled = false;
 
-                //Gets all activities that has the same tag
                 if (draftSchedule.get(i) instanceof TagWithTime) {
                     TagWithTime tagWithTime = (TagWithTime) draftSchedule.get(i);
                     similarActivities =
@@ -129,7 +126,6 @@ public class AutoScheduleCommand extends UndoableCommand {
                                 tagWithTime.getTag()));
                     }
                 }
-                //Gets all activities that has the same name
                 if (draftSchedule.get(i) instanceof NameWithTime) {
                     NameWithTime nameWithTime = (NameWithTime) draftSchedule.get(i);
                     similarActivities =
@@ -139,27 +135,21 @@ public class AutoScheduleCommand extends UndoableCommand {
                                 nameWithTime.getName()));
                     }
                 }
-                //ActivityCount represents an activity and the number of times it appears in the timetable
-                //Eg. Ski -> 1, Gundam Museum -> 1, Shop At daiso -> 2
+
                 List<ActivityWithCount> activitiesWithCount =
                         updateActivitiesCount(similarActivities, lastShownDays, activitiesForTheDay, dayIndex);
 
-                //Activities with the lowest count are the first to be added
-                //For those with same count, if the activity has a priority that is higher, it will be added first.
+                //activity list are sorted such that activity with the highest priority and lowest counts in the
+                //timetable gets scheduled
                 Collections.sort(activitiesWithCount);
 
-                //Main entry of execution
-                //Checks if duration exceed the next timing if any
                 for (ActivityWithCount activityWithCount : activitiesWithCount) {
                     int duration = activityWithCount.getActivity().getDuration().value;
                     LocalTime currentTiming = timeSchedule.get(i);
                     LocalTime currentActivityEndTime = currentTiming.plusMinutes(duration);
-                    int currentTime = currentTiming.getHour() * 1000 + currentTiming.getMinute();
-                    int nextTime = currentActivityEndTime.getHour() * 1000 + currentActivityEndTime.getMinute();
 
-                    //The last activity do not have to worry about overlap with another activity
                     if (i == draftSchedule.size() - 1) {
-                        if (nextTime - currentTime < 0) {
+                        if (currentActivityEndTime.isBefore(currentTiming)) {
                             break;
                         }
                         isScheduled = true;
@@ -168,16 +158,14 @@ public class AutoScheduleCommand extends UndoableCommand {
                                 activityWithCount.getActivity()));
                         break;
                     }
-                    //find the next timing if any given by user
-                    int nextTimingIndex = -1;
 
+                    int nextTimingIndex = -1;
                     for (int k = i + 1; k < timeSchedule.size(); k++) {
                         if (timeSchedule.get(k) != null) {
                             nextTimingIndex = k;
                             break;
                         }
                     }
-                    // No timing is given by user for the entire autoschedule command
                     if (nextTimingIndex == -1) {
                         isScheduled = true;
                         activitiesForTheDay.add(

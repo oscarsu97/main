@@ -329,7 +329,7 @@ next activity with the `next highest priority` and `least number of count in the
 
 * The `Day` to schedule for can be specified, otherwise it is assumed to be scheduled for all days.
 
-Format: `autoschedule (t/TAG || n/ACTIVITY_NAME)... [a/LOCATION_OF_ACTIVITIES] d/[DAY_INDEX]...`
+Format: `autoschedule (t/TAG [START_TIME]|| n/ACTIVITY_NAME [START_TIME])... [a/LOCATION_OF_ACTIVITIES] [d/DAY_INDEX...]`
 
 Examples:
 
