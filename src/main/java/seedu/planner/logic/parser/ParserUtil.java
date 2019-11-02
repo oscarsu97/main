@@ -332,11 +332,11 @@ public class ParserUtil {
         try {
             Integer trimmedPriorityValue = Integer.parseInt(priorityValue.trim());
             if (trimmedPriorityValue <= 0) {
-                throw new ParseException(MESSAGE_INVALID_PRIORITY);
+                throw new ParseException(Priority.MESSAGE_CONSTRAINTS);
             }
             return new Priority(trimmedPriorityValue);
         } catch (NumberFormatException e) {
-            throw new ParseException(MESSAGE_INVALID_PRIORITY);
+            throw new ParseException(Priority.MESSAGE_CONSTRAINTS);
         }
     }
 }
