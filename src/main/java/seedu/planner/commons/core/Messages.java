@@ -16,4 +16,5 @@ public class Messages {
     public static final String MESSAGE_CONTACTS_LISTED_OVERVIEW = "%1$d all contacts listed!";
     public static final String MESSAGE_DAYS_LISTED_OVERVIEW = "%1$d all days listed!";
     public static final String MESSAGE_ACTIVITY_NOT_PRESENT_IN_DAY = "Activity not found in day!";
+    public static final String MESSAGE_NO_DAYS_AVAILABLE = "No day(s) are present, please adds a Day first.";
 }

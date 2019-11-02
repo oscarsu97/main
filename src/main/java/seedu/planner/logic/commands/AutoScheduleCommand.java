@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import seedu.planner.commons.core.Messages;
 import seedu.planner.commons.core.index.Index;
 import seedu.planner.logic.commands.exceptions.CommandException;
 import seedu.planner.logic.commands.result.CommandResult;
@@ -40,8 +41,8 @@ public class AutoScheduleCommand extends UndoableCommand {
     public static final String MESSAGE_INVALID_SCHEDULE = "Unable to generate a schedule"
             + " with no overlapping activitiies";
     public static final String MESSAGE_SCHEDULE_ACTIVITY_SUCCESS = "Activities successfully scheduled.";
-    public static final String MESSAGE_ACTIVITY_TAG_NOT_FOUND = "Activity with the this tag %s not found";
-    public static final String MESSAGE_ACTIVITY_NAME_NOT_FOUND = "Activity with the this name %s not found";
+    public static final String MESSAGE_ACTIVITY_TAG_NOT_FOUND = "Activity with this tag %s not found";
+    public static final String MESSAGE_ACTIVITY_NAME_NOT_FOUND = "Activity with this name %s not found";
     public static final String MESSAGE_ADDRESS_NOT_FOUND = "Activities of this address %s not found";
 
     public static final HelpExplanation MESSAGE_USAGE = new HelpExplanation(
@@ -92,6 +93,10 @@ public class AutoScheduleCommand extends UndoableCommand {
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
         List<Day> lastShownDays = model.getFilteredItinerary();
+
+        if (lastShownDays.size() == 0){
+            throw new CommandException(Messages.MESSAGE_NO_DAYS_AVAILABLE);
+        }
 
         if (days.size() == 0) {
             days = daysToSchedule(lastShownDays.size());
@@ -298,7 +303,7 @@ public class AutoScheduleCommand extends UndoableCommand {
     private List<Activity> getActivitiesWithSameTag(List<Activity> filteredActivitiesByLocation, TagWithTime tag) {
         List<Activity> similarActivities = new ArrayList<>();
         for (Activity activity : filteredActivitiesByLocation) {
-            if (activity.getTags().equals(tag.getTag())) {
+            if (activity.getTags().contains(tag.getTag())) {
                 similarActivities.add(activity);
             }
         }
