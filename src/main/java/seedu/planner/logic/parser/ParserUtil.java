@@ -1,6 +1,7 @@
 package seedu.planner.logic.parser;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.planner.logic.parser.CliSyntax.PREFIX_NAME;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,7 +18,6 @@ import seedu.planner.commons.util.StringUtil;
 import seedu.planner.logic.parser.exceptions.ParseException;
 
 import seedu.planner.model.activity.Duration;
-import seedu.planner.model.activity.NameWithTime;
 import seedu.planner.model.activity.Priority;
 import seedu.planner.model.contact.Email;
 import seedu.planner.model.contact.Phone;
@@ -25,8 +25,8 @@ import seedu.planner.model.day.Day;
 import seedu.planner.model.field.Address;
 import seedu.planner.model.field.Cost;
 import seedu.planner.model.field.Name;
+import seedu.planner.model.field.NameAndTagWithTime;
 import seedu.planner.model.tag.Tag;
-import seedu.planner.model.tag.TagWithTime;
 
 /**
  * Contains utility methods used for parsing strings in the various *Parser classes.
@@ -70,27 +70,29 @@ public class ParserUtil {
         return new Name(trimmedName);
     }
 
-    /**
-     * Parses a {@code String argValue} into a {@code NameWithTime}.
-     * Leading and trailing whitespaces will be trimmed.
-     */
-    public static NameWithTime parseNameWithTime(String argValue) throws ParseException {
+    public static NameAndTagWithTime parseNameAndTagWithTime(String argValue, Prefix prefix) throws ParseException {
         requireNonNull(argValue);
         String trimmedArgValue = argValue.trim();
         String[] args = trimmedArgValue.split(" ");
+        LocalTime parsedTime;
 
         assert args.length > 0;
 
         if (args.length > 1) {
-            try {
-                LocalTime parsedTime = LocalTime.parse(args[args.length - 1], TIME_FORMATTER);
-                String name = trimmedArgValue.substring(0, trimmedArgValue.length() - 5);
-                return new NameWithTime(new Name(name), parsedTime);
-            } catch (DateTimeParseException e) {
-                throw new ParseException("Please input a time of this format: " + TIME_FORMAT);
+            parsedTime = parseTime(args[args.length - 1]);
+
+            String trimmedArg = trimmedArgValue.substring(0, trimmedArgValue.length() - 5);
+            if (prefix.equals(PREFIX_NAME)) {
+                return new NameAndTagWithTime(new Name(trimmedArg), null, parsedTime);
+            } else {
+                return new NameAndTagWithTime(null, new Tag(trimmedArg), parsedTime);
             }
         } else {
-            return new NameWithTime(new Name(trimmedArgValue), null);
+            if (prefix.equals(PREFIX_NAME)) {
+                return new NameAndTagWithTime(new Name(trimmedArgValue), null, null);
+            } else {
+                return new NameAndTagWithTime(null, new Tag(trimmedArgValue), null);
+            }
         }
     }
 
@@ -154,29 +156,6 @@ public class ParserUtil {
         return new Tag(trimmedTag);
     }
 
-    /**
-     * Parses a {@code String argValue} into a {@code TagWithTime}.
-     * Leading and trailing whitespaces will be trimmed.
-     */
-    public static TagWithTime parseTagWithTime(String argValue) throws ParseException {
-        requireNonNull(argValue);
-        String trimmedArgValue = argValue.trim();
-        String[] args = trimmedArgValue.split(" ");
-
-        assert args.length > 0;
-
-        if (args.length > 1) {
-            try {
-                LocalTime parsedTime = LocalTime.parse(args[args.length - 1], TIME_FORMATTER);
-                String tag = trimmedArgValue.substring(0, trimmedArgValue.length() - 5);
-                return new TagWithTime(new Tag(tag), parsedTime);
-            } catch (DateTimeParseException e) {
-                throw new ParseException("Please input a time of this format: " + TIME_FORMAT);
-            }
-        } else {
-            return new TagWithTime(new Tag(trimmedArgValue), null);
-        }
-    }
 
     /**
      * Parses {@code Collection<String> tags} into a {@code Set<Tag>}.
