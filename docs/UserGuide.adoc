@@ -34,7 +34,7 @@ e.g. typing *`help`* and pressing kbd:[Enter] will open the help window.
 .  Some example commands you can try:
 
 * *`help`* : a list of commands available on Plan^2^Travel
-* **`add act`**`n/Visit Gundam Museum a/Tokyo du/120 p/65543221` : adds an activity named `Visit Gundam Museum` at location `Tokyo` with a duration of 120 minutes and contact number `65543221` to the activity list.
+* **`add activity`**`n/Visit Gundam Museum a/Tokyo du/120 p/65543221` : adds an activity named `Visit Gundam Museum` at location `Tokyo` with a duration of 120 minutes and contact number `65543221` to the activity list.
 * *`exit`* : exits the app
 
 .  Refer to <<Features>> for details of each command.
@@ -319,7 +319,7 @@ Generates a list of activities for the specified days based on the `highest prio
 appears on the timetable.` +
 
 If the end time of the activity chosen overlaps with the next activity's start time, the
-next activity with the `next highest priority` and `least number of count in the timetable` are chose.
+next activity with the `next highest priority` and `least number of count in the timetable` are chosen  .
 
 * Timing can be specified if there is an activity that is confirmed to do at that timing.
 
