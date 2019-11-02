@@ -34,8 +34,6 @@ import seedu.planner.model.tag.TagWithTime;
 public class ParserUtil {
 
     public static final String MESSAGE_INVALID_INDEX = "Index is not a non-zero unsigned integer.";
-    public static final String MESSAGE_INVALID_PRIORITY = "Value of priority "
-            + "is not a non-zero unsigned positive integer.";
     private static final String DATE_FORMAT_1 = "d-M-yyyy";
     private static final String DATE_FORMAT_2 = "d-M-yy";
     private static final String TIME_FORMAT = "HHmm";
