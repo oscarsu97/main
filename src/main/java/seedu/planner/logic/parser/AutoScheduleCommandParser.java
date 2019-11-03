@@ -62,7 +62,7 @@ public class AutoScheduleCommandParser {
             Prefix prefix = prefixArgument.getPrefix();
 
             if (prefix.equals(PREFIX_TAG) || prefix.equals(PREFIX_NAME)) {
-                draftSchedule.add(ParserUtil.parseNameAndTagWithTime(prefixArgument.getArgValue(), prefix));
+                draftSchedule.add(ParserUtil.parseNameOrTagWithTime(prefixArgument.getArgValue(), prefix));
             }
         }
         return draftSchedule;

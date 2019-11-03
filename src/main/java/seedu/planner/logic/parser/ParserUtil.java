@@ -2,6 +2,7 @@ package seedu.planner.logic.parser;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.planner.logic.parser.CliSyntax.PREFIX_NAME;
+import static seedu.planner.logic.parser.CliSyntax.PREFIX_TAG;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -33,6 +34,7 @@ import seedu.planner.model.tag.Tag;
  */
 public class ParserUtil {
 
+    public static final String MESSAGE_INVALID_PREFIX = "Prefix given is incorrect.";
     public static final String MESSAGE_INVALID_INDEX = "Index is not a non-zero unsigned integer.";
     private static final String DATE_FORMAT_1 = "d-M-yyyy";
     private static final String DATE_FORMAT_2 = "d-M-yy";
@@ -76,8 +78,11 @@ public class ParserUtil {
      *
      * @throws ParseException if the given {@code phone} is invalid.
      */
-    public static NameOrTagWithTime parseNameAndTagWithTime(String argValue, Prefix prefix) throws ParseException {
+    public static NameOrTagWithTime parseNameOrTagWithTime(String argValue, Prefix prefix) throws ParseException {
         requireNonNull(argValue);
+        if (!prefix.equals(PREFIX_NAME) || !prefix.equals(PREFIX_TAG)){
+            throw new ParseException(MESSAGE_INVALID_PREFIX);
+        }
         String trimmedArgValue = argValue.trim();
         String[] args = trimmedArgValue.split(" ");
         LocalTime parsedTime;
