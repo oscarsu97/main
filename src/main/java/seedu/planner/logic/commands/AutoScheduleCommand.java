@@ -26,6 +26,7 @@ import seedu.planner.logic.commands.result.UiFocus;
 import seedu.planner.logic.commands.util.HelpExplanation;
 import seedu.planner.model.Model;
 import seedu.planner.model.activity.Activity;
+import seedu.planner.model.activity.ActivityWithCount;
 import seedu.planner.model.day.ActivityWithTime;
 import seedu.planner.model.day.Day;
 import seedu.planner.model.field.Address;
@@ -289,26 +290,5 @@ public class AutoScheduleCommand extends UndoableCommand {
                 && days.equals((((AutoScheduleCommand) other).days));
     }
 
-    /**
-     * Represents the number of times the Activity appears in the Timetable.
-     */
-    private static class ActivityWithCount implements Comparable<ActivityWithCount> {
-        private Activity activity;
-        private long count;
-
-        ActivityWithCount(Activity activity, long count) {
-            this.activity = activity;
-            this.count = count;
-        }
-
-        public Activity getActivity() {
-            return activity;
-        }
-
-        @Override
-        public int compareTo(ActivityWithCount o) {
-            return (int) (count - o.count);
-        }
-    }
 
 }
