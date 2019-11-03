@@ -10,12 +10,12 @@ import seedu.planner.model.tag.Tag;
 /**
  * Represents a Name or Tag with a timing tagged to it.
  */
-public class NameAndTagWithTime {
+public class NameOrTagWithTime {
     private final Name name;
     private final Tag tag;
     private final LocalTime time;
 
-    public NameAndTagWithTime(Name name, Tag tag, LocalTime time) {
+    public NameOrTagWithTime(Name name, Tag tag, LocalTime time) {
         CommandUtil.onlyOneNonNull(name, tag);
         this.name = name;
         this.tag = tag;
@@ -37,10 +37,10 @@ public class NameAndTagWithTime {
     @Override
     public boolean equals(Object other) {
         return other == this // short circuit if same object
-                || (other instanceof NameAndTagWithTime // instanceof handles nulls
-                && tag.equals(((NameAndTagWithTime) other).tag)
-                && name.equals(((NameAndTagWithTime) other).name)
-                && time.equals(((NameAndTagWithTime) other).time)); // state check
+                || (other instanceof NameOrTagWithTime // instanceof handles nulls
+                && tag.equals(((NameOrTagWithTime) other).tag)
+                && name.equals(((NameOrTagWithTime) other).name)
+                && time.equals(((NameOrTagWithTime) other).time)); // state check
     }
 
     @Override

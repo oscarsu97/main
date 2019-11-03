@@ -28,7 +28,7 @@ import seedu.planner.model.activity.Activity;
 import seedu.planner.model.day.ActivityWithTime;
 import seedu.planner.model.day.Day;
 import seedu.planner.model.field.Address;
-import seedu.planner.model.field.NameAndTagWithTime;
+import seedu.planner.model.field.NameOrTagWithTime;
 
 /**
  * Generates a schedule for specified day(s).
@@ -54,17 +54,17 @@ public class AutoScheduleCommand extends UndoableCommand {
                     + PREFIX_NAME + "Disneyland 1400 " + PREFIX_TAG + "Dining "
                     + PREFIX_ADDRESS + "Tokyo " + PREFIX_DAY + "1 4 5"
     );
-    private List<NameAndTagWithTime> draftSchedule;
+    private List<NameOrTagWithTime> draftSchedule;
     private Address address;
     private List<Index> days;
 
-    public AutoScheduleCommand(List<NameAndTagWithTime> draftSchedule, Address address, List<Index> days) {
+    public AutoScheduleCommand(List<NameOrTagWithTime> draftSchedule, Address address, List<Index> days) {
         this.draftSchedule = draftSchedule;
         this.address = address;
         this.days = days;
     }
 
-    public List<NameAndTagWithTime> getDraftSchedule() {
+    public List<NameOrTagWithTime> getDraftSchedule() {
         return draftSchedule;
     }
 
@@ -238,9 +238,9 @@ public class AutoScheduleCommand extends UndoableCommand {
      *
      * @param draftSchedule The order in with the type of activity to be carried out
      */
-    private List<LocalTime> fillTimeSchedule(List<NameAndTagWithTime> draftSchedule) {
+    private List<LocalTime> fillTimeSchedule(List<NameOrTagWithTime> draftSchedule) {
         List<LocalTime> timeSchedule = new ArrayList<>();
-        for (NameAndTagWithTime nameAndTagWithTime : draftSchedule) {
+        for (NameOrTagWithTime nameAndTagWithTime : draftSchedule) {
             timeSchedule.add(nameAndTagWithTime.getTime());
         }
         if (timeSchedule.get(0) == null) {
@@ -250,7 +250,7 @@ public class AutoScheduleCommand extends UndoableCommand {
     }
 
     private List<Activity> getSimilarActivities(List<Activity> filteredActivitiesByLocation,
-                                                NameAndTagWithTime nameAndTagWithTime) throws CommandException {
+                                                NameOrTagWithTime nameAndTagWithTime) throws CommandException {
         List<Activity> filteredList = filteredActivitiesByLocation
                 .stream()
                 .filter(activity -> (nameAndTagWithTime.getTag().isPresent()

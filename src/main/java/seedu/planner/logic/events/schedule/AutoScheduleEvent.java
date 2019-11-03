@@ -11,18 +11,18 @@ import seedu.planner.model.Itinerary;
 import seedu.planner.model.Model;
 import seedu.planner.model.ReadOnlyItinerary;
 import seedu.planner.model.field.Address;
-import seedu.planner.model.field.NameAndTagWithTime;
+import seedu.planner.model.field.NameOrTagWithTime;
 
 /**
  * An event representing an 'autoschedule' command.
  */
 public class AutoScheduleEvent implements Event {
     private final ReadOnlyItinerary previousItinerary;
-    private final List<NameAndTagWithTime> draftSchedule;
+    private final List<NameOrTagWithTime> draftSchedule;
     private final Address address;
     private final List<Index> days;
 
-    public AutoScheduleEvent(List<NameAndTagWithTime> draftSchedule, Address address, List<Index> days, Model model) {
+    public AutoScheduleEvent(List<NameOrTagWithTime> draftSchedule, Address address, List<Index> days, Model model) {
         this.draftSchedule = draftSchedule;
         this.address = address;
         this.days = days;

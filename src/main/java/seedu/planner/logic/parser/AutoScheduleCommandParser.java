@@ -14,7 +14,7 @@ import seedu.planner.commons.core.index.Index;
 import seedu.planner.logic.commands.AutoScheduleCommand;
 import seedu.planner.logic.parser.exceptions.ParseException;
 import seedu.planner.model.field.Address;
-import seedu.planner.model.field.NameAndTagWithTime;
+import seedu.planner.model.field.NameOrTagWithTime;
 
 /**
  * Parses input arguments and creates a new AutoScheduleCommand object
@@ -39,7 +39,7 @@ public class AutoScheduleCommandParser {
         Address address = null;
         List<Index> days = new ArrayList<>();
         //Contains either a Tag class or a Name class
-        List<NameAndTagWithTime> draftSchedule;
+        List<NameOrTagWithTime> draftSchedule;
 
         draftSchedule = getDraftSchedule(argMultimap, PREFIX_TAG, PREFIX_NAME);
         if (argMultimap.getValue(PREFIX_ADDRESS).isPresent()) {
@@ -52,10 +52,10 @@ public class AutoScheduleCommandParser {
         return new AutoScheduleCommand(draftSchedule, address, days);
     }
 
-    private List<NameAndTagWithTime> getDraftSchedule(ArgumentMultimap argumentMultimap,
-                                                      Prefix... prefixes) throws ParseException {
+    private List<NameOrTagWithTime> getDraftSchedule(ArgumentMultimap argumentMultimap,
+                                                     Prefix... prefixes) throws ParseException {
         List<PrefixArgument> filteredMultiMap = argumentMultimap.getFilteredArgMultiMap(prefixes);
-        List<NameAndTagWithTime> draftSchedule = new ArrayList<>();
+        List<NameOrTagWithTime> draftSchedule = new ArrayList<>();
 
         for (PrefixArgument prefixArgument : filteredMultiMap) {
             Prefix prefix = prefixArgument.getPrefix();

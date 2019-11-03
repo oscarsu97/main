@@ -25,7 +25,7 @@ import seedu.planner.model.day.Day;
 import seedu.planner.model.field.Address;
 import seedu.planner.model.field.Cost;
 import seedu.planner.model.field.Name;
-import seedu.planner.model.field.NameAndTagWithTime;
+import seedu.planner.model.field.NameOrTagWithTime;
 import seedu.planner.model.tag.Tag;
 
 /**
@@ -76,7 +76,7 @@ public class ParserUtil {
      *
      * @throws ParseException if the given {@code phone} is invalid.
      */
-    public static NameAndTagWithTime parseNameAndTagWithTime(String argValue, Prefix prefix) throws ParseException {
+    public static NameOrTagWithTime parseNameAndTagWithTime(String argValue, Prefix prefix) throws ParseException {
         requireNonNull(argValue);
         String trimmedArgValue = argValue.trim();
         String[] args = trimmedArgValue.split(" ");
@@ -89,15 +89,15 @@ public class ParserUtil {
 
             String trimmedArg = trimmedArgValue.substring(0, trimmedArgValue.length() - 5);
             if (prefix.equals(PREFIX_NAME)) {
-                return new NameAndTagWithTime(new Name(trimmedArg), null, parsedTime);
+                return new NameOrTagWithTime(new Name(trimmedArg), null, parsedTime);
             } else {
-                return new NameAndTagWithTime(null, new Tag(trimmedArg), parsedTime);
+                return new NameOrTagWithTime(null, new Tag(trimmedArg), parsedTime);
             }
         } else {
             if (prefix.equals(PREFIX_NAME)) {
-                return new NameAndTagWithTime(new Name(trimmedArgValue), null, null);
+                return new NameOrTagWithTime(new Name(trimmedArgValue), null, null);
             } else {
-                return new NameAndTagWithTime(null, new Tag(trimmedArgValue), null);
+                return new NameOrTagWithTime(null, new Tag(trimmedArgValue), null);
             }
         }
     }
