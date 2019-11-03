@@ -39,7 +39,7 @@ public class AutoScheduleCommand extends UndoableCommand {
 
     public static final String COMMAND_WORD = "autoschedule";
     public static final String MESSAGE_INVALID_SCHEDULE = "Unable to generate a schedule"
-            + " with no overlapping activities";
+            + " with no overlapping";
     public static final String MESSAGE_SUCCESS = "Schedule for the day(s) generated!";
     public static final String TIME_FORMAT = "HHmm";
     public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern(TIME_FORMAT);
@@ -105,65 +105,28 @@ public class AutoScheduleCommand extends UndoableCommand {
             if (dayIndex.getZeroBased() >= editDays.size()) {
                 throw new CommandException(Messages.MESSAGE_INVALID_DAY_DISPLAYED_INDEX);
             }
-
             for (int i = 0; i < draftSchedule.size(); i++) {
-                boolean isScheduled = false;
                 List<Activity> similarActivities = getSimilarActivities(activityListByLocation, draftSchedule.get(i));
                 List<ActivityWithCount> activitiesWithCount = updateCount(similarActivities, editDays,
                         activitiesForTheDay, dayIndex);
-                //Check if activity is able to fit the schedule
-                for (ActivityWithCount activityWithCount : activitiesWithCount) {
-                    int duration = activityWithCount.getActivity().getDuration().value;
-                    LocalTime currentTiming = timeSchedule.get(i).get();
-                    LocalTime currentActivityEndTime = currentTiming.plusMinutes(duration);
+                int nextIndex = i + 1;
+                OptionalInt nextTimingIndex = getNextTimingIndex(i, timeSchedule);
+                LocalTime currentTime = timeSchedule.get(i).get();
 
-                    if (i == draftSchedule.size() - 1) {
-                        if (currentActivityEndTime.isBefore(currentTiming)) {
-                            break;
-                        }
-                        isScheduled = true;
-                        activitiesForTheDay.add(activityToSchedule(
-                                timeSchedule.get(i).atDate(model.getStartDate().plusDays(dayIndex.getZeroBased())),
-                                activityWithCount.getActivity()));
-                        break;
-                    }
-                    //Find the index of the next timing if any
-                    OptionalInt nextTimingIndex = getNextTimingIndex(i, timeSchedule);
-                    if (nextTimingIndex.isEmpty()) {
-                        isScheduled = true;
-                        activitiesForTheDay.add(
-                                activityToSchedule(
-                                    timeSchedule.get(i).atDate(model.getStartDate().plusDays(dayIndex.getZeroBased())),
-                                    activityWithCount.getActivity()
-                            )
-                        );
-                        timeSchedule.set(i + 1, currentTiming.plusMinutes(duration));
-                        break;
-                        //check next timing does not overlap
-                    } else {
-                        LocalTime startTimeOfNextActivity = timeSchedule.get(nextTimingIndex.getAsInt()).get();
-
-                        if (startTimeOfNextActivity.compareTo(currentActivityEndTime) >= 0) {
-                            isScheduled = true;
-                            activitiesForTheDay.add(
-                                    activityToSchedule(
-                                        timeSchedule.get(i)
-                                                .atDate(model.getStartDate().plusDays(dayIndex.getZeroBased())),
-                                        activityWithCount.getActivity()
-                                    )
-                            );
-                            //the next activity will be given a start time,
-                            // if the timing is not the next in line
-                            //Eg. 1000 null 1300 -> becomes 1000 1000+30min  1300
-                            if (nextTimingIndex.getAsInt() != i + 1) {
-                                timeSchedule.set(i + 1, Optional.of(currentActivityEndTime));
-                            }
-                            break;
-                        }
-                    }
-                }
-                if (!isScheduled) {
+                //Check if there exists an activity that fits the schedule
+                Optional<Activity> activity = getSuitableActivity(activitiesWithCount, i, timeSchedule);
+                if (activity.isPresent()) {
+                    activitiesForTheDay.add(toSchedule(timeSchedule.get(i).get()
+                            .atDate(model.getStartDate().plusDays(dayIndex.getZeroBased())), activity.get()));
+                } else {
                     throw new CommandException(MESSAGE_INVALID_SCHEDULE);
+                }
+
+                //Sets the next timing as the end time of chosen activity if next timing in schedule is unavailable
+                int duration = activity.get().getDuration().value;
+                if ((nextTimingIndex.isEmpty() || (nextTimingIndex.getAsInt() != nextIndex
+                        && nextTimingIndex.getAsInt() != draftSchedule.size()))) {
+                    timeSchedule.set(nextIndex, Optional.ofNullable(currentTime.plusMinutes(duration)));
                 }
             }
             Day editedDay = new Day(activitiesForTheDay);
@@ -174,10 +137,42 @@ public class AutoScheduleCommand extends UndoableCommand {
         return new CommandResult(Messages.MESSAGE_SCHEDULE_ACTIVITY_SUCCESS, new UiFocus[]{UiFocus.AGENDA});
     }
 
+    private Optional<Activity> getSuitableActivity(List<ActivityWithCount> activitiesWithCount, int currentIndex,
+                                                   List<Optional<LocalTime>> timeSchedule) throws CommandException {
+        for (ActivityWithCount activityWithCount : activitiesWithCount) {
+            int duration = activityWithCount.getActivity().getDuration().value;
+            LocalTime currentTiming = timeSchedule.get(currentIndex).get();
+            LocalTime currentActivityEndTime = currentTiming.plusMinutes(duration);
+
+            //Check if it is the last activity in the draftSchedule to schedule
+            if (currentIndex == draftSchedule.size() - 1) {
+                if (currentActivityEndTime.isBefore(currentTiming)) {
+                    throw new CommandException(MESSAGE_INVALID_SCHEDULE);
+                }
+                return Optional.of(activityWithCount.getActivity());
+            }
+
+            //check if activity chosen overlap next timing in timeSchedule
+            OptionalInt nextTimingIndex = getNextTimingIndex(currentIndex, timeSchedule);
+            if (nextTimingIndex.isEmpty()) {
+                return Optional.of(activityWithCount.getActivity());
+            } else {
+                LocalTime startTimeOfNextActivity = timeSchedule.get(nextTimingIndex.getAsInt()).get();
+                if (startTimeOfNextActivity.compareTo(currentActivityEndTime) >= 0) {
+                    return Optional.of(activityWithCount.getActivity());
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
     /**
      * Gets the index of the next timing in the schedule if any.
      */
     private OptionalInt getNextTimingIndex(int currentIndex, List<Optional<LocalTime>> timeSchedule) {
+        if (currentIndex + 1 == timeSchedule.size()) {
+            return OptionalInt.of(timeSchedule.size());
+        }
         return IntStream.range(currentIndex + 1, timeSchedule.size())
                 .filter(k -> timeSchedule.get(k).isPresent())
                 .findFirst();
