@@ -99,9 +99,9 @@ public class AutoScheduleCommand extends UndoableCommand {
         if (days.size() == 0) {
             days = daysToSchedule(editDays.size());
         }
+        //Generate schedule for specified day(s)
         for (Index dayIndex : days) {
             List<ActivityWithTime> activitiesForTheDay = new ArrayList<>();
-
             if (dayIndex.getZeroBased() >= editDays.size()) {
                 throw new CommandException(Messages.MESSAGE_INVALID_DAY_DISPLAYED_INDEX);
             }
@@ -111,9 +111,7 @@ public class AutoScheduleCommand extends UndoableCommand {
                 List<Activity> similarActivities = getSimilarActivities(activityListByLocation, draftSchedule.get(i));
                 List<ActivityWithCount> activitiesWithCount = updateCount(similarActivities, editDays,
                         activitiesForTheDay, dayIndex);
-
-                Collections.sort(activitiesWithCount);
-
+                //Check if activity is able to fit the schedule
                 for (ActivityWithCount activityWithCount : activitiesWithCount) {
                     int duration = activityWithCount.getActivity().getDuration().value;
                     LocalTime currentTiming = timeSchedule.get(i).get();
@@ -129,7 +127,7 @@ public class AutoScheduleCommand extends UndoableCommand {
                                 activityWithCount.getActivity()));
                         break;
                     }
-
+                    //Find the index of the next timing if any
                     OptionalInt nextTimingIndex = getNextTimingIndex(i, timeSchedule);
                     if (nextTimingIndex.isEmpty()) {
                         isScheduled = true;
@@ -179,8 +177,8 @@ public class AutoScheduleCommand extends UndoableCommand {
     /**
      * Gets the index of the next timing in the schedule if any.
      */
-    private OptionalInt getNextTimingIndex(int i, List<Optional<LocalTime>> timeSchedule) {
-        return IntStream.range(i + 1, timeSchedule.size())
+    private OptionalInt getNextTimingIndex(int currentIndex, List<Optional<LocalTime>> timeSchedule) {
+        return IntStream.range(currentIndex + 1, timeSchedule.size())
                 .filter(k -> timeSchedule.get(k).isPresent())
                 .findFirst();
     }
@@ -216,6 +214,7 @@ public class AutoScheduleCommand extends UndoableCommand {
                     .count();
             activityCounts.add(new ActivityWithCount(similarActivity, (int) count));
         }
+        Collections.sort(activityCounts);
         return activityCounts;
     }
 
@@ -289,6 +288,4 @@ public class AutoScheduleCommand extends UndoableCommand {
                 && address.equals(((AutoScheduleCommand) other).address)
                 && days.equals((((AutoScheduleCommand) other).days));
     }
-
-
 }
