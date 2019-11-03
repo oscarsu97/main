@@ -80,7 +80,7 @@ public class ParserUtil {
      */
     public static NameOrTagWithTime parseNameOrTagWithTime(String argValue, Prefix prefix) throws ParseException {
         requireNonNull(argValue);
-        if (!prefix.equals(PREFIX_NAME) || !prefix.equals(PREFIX_TAG)){
+        if (!prefix.equals(PREFIX_NAME) || !prefix.equals(PREFIX_TAG)) {
             throw new ParseException(MESSAGE_INVALID_PREFIX);
         }
         String trimmedArgValue = argValue.trim();
