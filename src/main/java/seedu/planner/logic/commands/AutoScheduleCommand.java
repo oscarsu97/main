@@ -88,9 +88,8 @@ public class AutoScheduleCommand extends UndoableCommand {
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
         List<Day> editDays = new ArrayList<>(model.getFilteredItinerary());
-        List<Optional<LocalTime>> timeSchedule = fillTimeSchedule(draftSchedule);
         List<Activity> activityListByLocation = new ArrayList<>(filterByLocation(model.getFilteredActivityList()));
-
+        List<Optional<LocalTime>> timeSchedule = fillTimeSchedule(draftSchedule);
         Collections.sort(activityListByLocation);
 
         if (editDays.size() == 0) {
@@ -109,6 +108,10 @@ public class AutoScheduleCommand extends UndoableCommand {
                 List<Activity> similarActivities = getSimilarActivities(activityListByLocation, draftSchedule.get(i));
                 List<ActivityWithCount> activitiesWithCount = updateCount(similarActivities, editDays,
                         activitiesForTheDay, dayIndex);
+                for (ActivityWithCount activity : activitiesWithCount) {
+                    System.out.println(activity.getActivity().getName() + " " + activity.getCount());
+                }
+                System.out.println(" =========================================================");
                 int nextIndex = i + 1;
                 OptionalInt nextTimingIndex = getNextTimingIndex(i, timeSchedule);
                 LocalTime currentTime = timeSchedule.get(i).get();
@@ -197,7 +200,7 @@ public class AutoScheduleCommand extends UndoableCommand {
             long count = 0;
             for (int i = 0; i < lastShownDays.size(); i++) {
                 if (i != dayToEdit.getZeroBased()) {
-                    count = lastShownDays.get(i).getListOfActivityWithTime()
+                    count += lastShownDays.get(i).getListOfActivityWithTime()
                             .stream()
                             .filter(activityWithTime -> activityWithTime.getActivity().equals(similarActivity))
                             .count();
@@ -268,10 +271,11 @@ public class AutoScheduleCommand extends UndoableCommand {
                     .stream()
                     .filter(activity -> activity.getAddress().equals(address.get()))
                     .collect(Collectors.toList());
+            if (filteredList.size() == 0) {
+                throw new CommandException(String.format(Messages.MESSAGE_ADDRESS_NOT_FOUND, address.get()));
+            }
         }
-        if (filteredList.size() == 0) {
-            throw new CommandException(String.format(Messages.MESSAGE_ADDRESS_NOT_FOUND, address.get()));
-        }
+
         return filteredList;
     }
 

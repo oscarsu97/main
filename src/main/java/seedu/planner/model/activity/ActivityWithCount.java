@@ -18,6 +18,10 @@ public class ActivityWithCount implements Comparable<ActivityWithCount> {
         return activity;
     }
 
+    public long getCount() {
+        return count;
+    }
+
     @Override
     public int compareTo(ActivityWithCount o) {
         return (int) (count - o.count);

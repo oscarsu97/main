@@ -80,30 +80,31 @@ public class ParserUtil {
      */
     public static NameOrTagWithTime parseNameOrTagWithTime(String argValue, Prefix prefix) throws ParseException {
         requireNonNull(argValue);
-        if (!prefix.equals(PREFIX_NAME) || !prefix.equals(PREFIX_TAG)) {
-            throw new ParseException(MESSAGE_INVALID_PREFIX);
-        }
-        String trimmedArgValue = argValue.trim();
-        String[] args = trimmedArgValue.split(" ");
-        LocalTime parsedTime;
+        if (prefix.equals(PREFIX_NAME) || prefix.equals(PREFIX_TAG)) {
+            String trimmedArgValue = argValue.trim();
+            String[] args = trimmedArgValue.split(" ");
+            LocalTime parsedTime;
 
-        assert args.length > 0;
+            assert args.length > 0;
 
-        if (args.length > 1) {
-            parsedTime = parseTime(args[args.length - 1]);
+            if (args.length > 1) {
+                parsedTime = parseTime(args[args.length - 1]);
 
-            String trimmedArg = trimmedArgValue.substring(0, trimmedArgValue.length() - 5);
-            if (prefix.equals(PREFIX_NAME)) {
-                return new NameOrTagWithTime(new Name(trimmedArg), parsedTime);
+                String trimmedArg = trimmedArgValue.substring(0, trimmedArgValue.length() - 5);
+                if (prefix.equals(PREFIX_NAME)) {
+                    return new NameOrTagWithTime(new Name(trimmedArg), parsedTime);
+                } else {
+                    return new NameOrTagWithTime(new Tag(trimmedArg), parsedTime);
+                }
             } else {
-                return new NameOrTagWithTime(new Tag(trimmedArg), parsedTime);
+                if (prefix.equals(PREFIX_NAME)) {
+                    return new NameOrTagWithTime(new Name(trimmedArgValue), null);
+                } else {
+                    return new NameOrTagWithTime(new Tag(trimmedArgValue), null);
+                }
             }
         } else {
-            if (prefix.equals(PREFIX_NAME)) {
-                return new NameOrTagWithTime(new Name(trimmedArgValue), null);
-            } else {
-                return new NameOrTagWithTime(new Tag(trimmedArgValue), null);
-            }
+            throw new ParseException(MESSAGE_INVALID_PREFIX);
         }
     }
 
