@@ -89,15 +89,15 @@ public class ParserUtil {
 
             String trimmedArg = trimmedArgValue.substring(0, trimmedArgValue.length() - 5);
             if (prefix.equals(PREFIX_NAME)) {
-                return new NameOrTagWithTime(new Name(trimmedArg), null, parsedTime);
+                return new NameOrTagWithTime(new Name(trimmedArg), parsedTime);
             } else {
-                return new NameOrTagWithTime(null, new Tag(trimmedArg), parsedTime);
+                return new NameOrTagWithTime(new Tag(trimmedArg), parsedTime);
             }
         } else {
             if (prefix.equals(PREFIX_NAME)) {
-                return new NameOrTagWithTime(new Name(trimmedArgValue), null, null);
+                return new NameOrTagWithTime(new Name(trimmedArgValue), null);
             } else {
-                return new NameOrTagWithTime(null, new Tag(trimmedArgValue), null);
+                return new NameOrTagWithTime(new Tag(trimmedArgValue), null);
             }
         }
     }

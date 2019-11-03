@@ -4,7 +4,6 @@ import java.time.LocalTime;
 import java.util.Objects;
 import java.util.Optional;
 
-import seedu.planner.logic.commands.util.CommandUtil;
 import seedu.planner.model.tag.Tag;
 
 /**
@@ -15,11 +14,16 @@ public class NameOrTagWithTime {
     private final Tag tag;
     private final LocalTime time;
 
-    public NameOrTagWithTime(Name name, Tag tag, LocalTime time) {
-        CommandUtil.onlyOneNonNull(name, tag);
+    public NameOrTagWithTime(Name name, LocalTime time) {
         this.name = name;
+        this.time = time;
+        this.tag = null;
+    }
+
+    public NameOrTagWithTime(Tag tag, LocalTime time) {
         this.tag = tag;
         this.time = time;
+        this.name = null;
     }
 
     public Optional<Name> getName() {
@@ -30,8 +34,8 @@ public class NameOrTagWithTime {
         return Optional.ofNullable(tag);
     }
 
-    public LocalTime getTime() {
-        return time;
+    public Optional<LocalTime> getTime() {
+        return Optional.ofNullable(time);
     }
 
     @Override

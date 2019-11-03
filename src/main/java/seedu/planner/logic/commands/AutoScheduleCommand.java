@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -55,10 +56,11 @@ public class AutoScheduleCommand extends UndoableCommand {
                     + PREFIX_ADDRESS + "Tokyo " + PREFIX_DAY + "1 4 5"
     );
     private List<NameOrTagWithTime> draftSchedule;
-    private Address address;
+    private Optional<Address> address;
     private List<Index> days;
 
-    public AutoScheduleCommand(List<NameOrTagWithTime> draftSchedule, Address address, List<Index> days) {
+    public AutoScheduleCommand(List<NameOrTagWithTime> draftSchedule, Optional<Address> address, List<Index> days) {
+        requireNonNull(draftSchedule);
         this.draftSchedule = draftSchedule;
         this.address = address;
         this.days = days;
@@ -68,7 +70,7 @@ public class AutoScheduleCommand extends UndoableCommand {
         return draftSchedule;
     }
 
-    public Address getAddress() {
+    public Optional<Address> getAddress() {
         return address;
     }
 
@@ -84,49 +86,36 @@ public class AutoScheduleCommand extends UndoableCommand {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        List<Day> lastShownDays = model.getFilteredItinerary();
-        List<Activity> lastShownActivities = model.getFilteredActivityList();
-        List<Activity> filteredActivitiesByLocation = lastShownActivities;
-        if (lastShownDays.size() == 0) {
+        List<Day> editDays = new ArrayList<>(model.getFilteredItinerary());
+        List<Optional<LocalTime>> timeSchedule = fillTimeSchedule(draftSchedule);
+        List<Activity> activityListByLocation = new ArrayList<>(filterByLocation(model.getFilteredActivityList()));
+
+        Collections.sort(activityListByLocation);
+
+        if (editDays.size() == 0) {
             throw new CommandException(Messages.MESSAGE_NO_DAYS_AVAILABLE);
         }
         if (days.size() == 0) {
-            days = daysToSchedule(lastShownDays.size());
-        }
-        if (address != null) {
-            filteredActivitiesByLocation = filterActivitiesByLocation(lastShownActivities, address);
-            if (filteredActivitiesByLocation.size() == 0) {
-                throw new CommandException(String.format(Messages.MESSAGE_ADDRESS_NOT_FOUND, address));
-            }
+            days = daysToSchedule(editDays.size());
         }
         for (Index dayIndex : days) {
-            List<LocalTime> timeSchedule = fillTimeSchedule(draftSchedule);
             List<ActivityWithTime> activitiesForTheDay = new ArrayList<>();
 
-            if (dayIndex.getZeroBased() >= lastShownDays.size()) {
+            if (dayIndex.getZeroBased() >= editDays.size()) {
                 throw new CommandException(Messages.MESSAGE_INVALID_DAY_DISPLAYED_INDEX);
             }
 
-            // sort activities by priority
-            List<Activity> newActivityListByLocation = new ArrayList<>(filteredActivitiesByLocation);
-            Collections.sort(newActivityListByLocation);
-
-            //draftSchedule contains TagWithTime and NameWithTime in the same order given by user
             for (int i = 0; i < draftSchedule.size(); i++) {
                 boolean isScheduled = false;
-                List<Activity> similarActivities = getSimilarActivities(newActivityListByLocation,
-                        draftSchedule.get(i));
+                List<Activity> similarActivities = getSimilarActivities(activityListByLocation, draftSchedule.get(i));
+                List<ActivityWithCount> activitiesWithCount = updateCount(similarActivities, editDays,
+                        activitiesForTheDay, dayIndex);
 
-                List<ActivityWithCount> activitiesWithCount =
-                        updateActivitiesCount(similarActivities, lastShownDays, activitiesForTheDay, dayIndex);
-
-                //activity list are sorted such that activity with the highest priority and lowest counts in the
-                //timetable gets scheduled
                 Collections.sort(activitiesWithCount);
 
                 for (ActivityWithCount activityWithCount : activitiesWithCount) {
                     int duration = activityWithCount.getActivity().getDuration().value;
-                    LocalTime currentTiming = timeSchedule.get(i);
+                    LocalTime currentTiming = timeSchedule.get(i).get();
                     LocalTime currentActivityEndTime = currentTiming.plusMinutes(duration);
 
                     if (i == draftSchedule.size() - 1) {
@@ -140,10 +129,7 @@ public class AutoScheduleCommand extends UndoableCommand {
                         break;
                     }
 
-                    OptionalInt nextTimingIndex = IntStream.range(i + 1, timeSchedule.size())
-                            .filter(k -> timeSchedule.get(k) != null)
-                            .findFirst();
-
+                    OptionalInt nextTimingIndex = getNextTimingIndex(i, timeSchedule);
                     if (nextTimingIndex.isEmpty()) {
                         isScheduled = true;
                         activitiesForTheDay.add(
@@ -156,7 +142,7 @@ public class AutoScheduleCommand extends UndoableCommand {
                         break;
                         //check next timing does not overlap
                     } else {
-                        LocalTime startTimeOfNextActivity = timeSchedule.get(nextTimingIndex.getAsInt());
+                        LocalTime startTimeOfNextActivity = timeSchedule.get(nextTimingIndex.getAsInt()).get();
 
                         if (startTimeOfNextActivity.compareTo(currentActivityEndTime) >= 0) {
                             isScheduled = true;
@@ -171,7 +157,7 @@ public class AutoScheduleCommand extends UndoableCommand {
                             // if the timing is not the next in line
                             //Eg. 1000 null 1300 -> becomes 1000 1000+30min  1300
                             if (nextTimingIndex.getAsInt() != i + 1) {
-                                timeSchedule.set(i + 1, currentActivityEndTime);
+                                timeSchedule.set(i + 1, Optional.of(currentActivityEndTime));
                             }
                             break;
                         }
@@ -182,69 +168,66 @@ public class AutoScheduleCommand extends UndoableCommand {
                 }
             }
             Day editedDay = new Day(activitiesForTheDay);
-            List<Day> editedDays = new ArrayList<>(lastShownDays);
-            editedDays.set(dayIndex.getZeroBased(), editedDay);
-            model.setDays(editedDays);
+            editDays.set(dayIndex.getZeroBased(), editedDay);
+            model.setDays(editDays);
             model.updateFilteredItinerary(PREDICATE_SHOW_ALL_DAYS);
         }
         return new CommandResult(Messages.MESSAGE_SCHEDULE_ACTIVITY_SUCCESS, new UiFocus[]{UiFocus.AGENDA});
     }
 
     /**
-     * Creates an ActivityWithTime to be scheduled.
-     *
-     * @param activity activity to be scheduled
+     * Gets the index of the next timing in the schedule if any.
      */
-    private ActivityWithTime activityToSchedule(LocalDateTime currentDateTime, Activity activity) {
+    private OptionalInt getNextTimingIndex(int i, List<Optional<LocalTime>> timeSchedule) {
+        return IntStream.range(i + 1, timeSchedule.size())
+                .filter(k -> timeSchedule.get(k).isPresent())
+                .findFirst();
+    }
+
+    /**
+     * Creates an ActivityWithTime to be scheduled.
+     */
+    private ActivityWithTime toSchedule(LocalDateTime currentDateTime, Activity activity) {
         return new ActivityWithTime(activity, currentDateTime);
     }
 
     /**
-     * Generates a list containing all activities with countsv which represents the number of the same activity
-     * that exist in the itinerary.
+     * Generates a list that track the number of time each activity appears in the timetable.
      *
      * @param activitiesForTheDay list of activities that are generated by auto-scheduling
      */
-    private List<ActivityWithCount> updateActivitiesCount(List<Activity> similarActivities, List<Day> lastShownDays,
-                                                          List<ActivityWithTime> activitiesForTheDay, Index dayToEdit) {
+    private List<ActivityWithCount> updateCount(List<Activity> similarActivities, List<Day> lastShownDays,
+                                                List<ActivityWithTime> activitiesForTheDay, Index dayToEdit) {
         List<ActivityWithCount> activityCounts = new ArrayList<>();
         for (Activity similarActivity : similarActivities) {
-            int count = 0;
-            //number of times the activities appear in other days
+            long count = 0;
             for (int i = 0; i < lastShownDays.size(); i++) {
-                if (i == dayToEdit.getZeroBased()) {
-                    continue;
-                }
-                List<ActivityWithTime> activities = lastShownDays.get(i).getListOfActivityWithTime();
-                for (ActivityWithTime activityWithTime : activities) {
-                    if (activityWithTime.getActivity().equals(similarActivity)) {
-                        count += 1;
-                    }
+                if (i != dayToEdit.getZeroBased()) {
+                    count = lastShownDays.get(i).getListOfActivityWithTime()
+                            .stream()
+                            .filter(activityWithTime -> activityWithTime.getActivity().equals(similarActivity))
+                            .count();
                 }
             }
-            //number of times the activity appear in our current list of activities to schedule
-            for (ActivityWithTime activityWithTime : activitiesForTheDay) {
-                if (activityWithTime.getActivity().equals(similarActivity)) {
-                    count += 1;
-                }
-            }
-            activityCounts.add(new ActivityWithCount(similarActivity, count));
+            count += (int) activitiesForTheDay
+                    .stream()
+                    .filter(activityWithTime -> activityWithTime.getActivity().equals(similarActivity))
+                    .count();
+            activityCounts.add(new ActivityWithCount(similarActivity, (int) count));
         }
         return activityCounts;
     }
 
     /**
      * Creates a list to track the time of each activity to be carried out.
-     *
-     * @param draftSchedule The order in with the type of activity to be carried out
      */
-    private List<LocalTime> fillTimeSchedule(List<NameOrTagWithTime> draftSchedule) {
-        List<LocalTime> timeSchedule = new ArrayList<>();
+    private List<Optional<LocalTime>> fillTimeSchedule(List<NameOrTagWithTime> draftSchedule) {
+        List<Optional<LocalTime>> timeSchedule = new ArrayList<>();
         for (NameOrTagWithTime nameAndTagWithTime : draftSchedule) {
             timeSchedule.add(nameAndTagWithTime.getTime());
         }
-        if (timeSchedule.get(0) == null) {
-            timeSchedule.set(0, DEFAULT_START_TIME);
+        if (timeSchedule.get(0).isEmpty()) {
+            timeSchedule.set(0, Optional.of(DEFAULT_START_TIME));
         }
         return timeSchedule;
     }
@@ -262,10 +245,10 @@ public class AutoScheduleCommand extends UndoableCommand {
         if (filteredList.isEmpty()) {
             if (nameAndTagWithTime.getName().isPresent()) {
                 throw new CommandException(String.format(Messages.MESSAGE_ACTIVITY_NAME_NOT_FOUND,
-                        nameAndTagWithTime.getName()));
+                        nameAndTagWithTime.getName().get()));
             } else {
                 throw new CommandException(String.format(Messages.MESSAGE_ACTIVITY_TAG_NOT_FOUND,
-                        nameAndTagWithTime.getTag()));
+                        nameAndTagWithTime.getTag().get()));
             }
         }
         return filteredList;
@@ -283,11 +266,18 @@ public class AutoScheduleCommand extends UndoableCommand {
     /**
      * @return list of activities that has the same location specified.
      */
-    private List<Activity> filterActivitiesByLocation(List<Activity> lastShownActivities, Address address) {
-        return lastShownActivities
-                .stream()
-                .filter(activity -> activity.getAddress().equals(address))
-                .collect(Collectors.toList());
+    private List<Activity> filterByLocation(List<Activity> lastShownActivities) throws CommandException {
+        List<Activity> filteredList = lastShownActivities;
+        if (address.isPresent()) {
+            filteredList = lastShownActivities
+                    .stream()
+                    .filter(activity -> activity.getAddress().equals(address.get()))
+                    .collect(Collectors.toList());
+        }
+        if (filteredList.size() == 0) {
+            throw new CommandException(String.format(Messages.MESSAGE_ADDRESS_NOT_FOUND, address.get()));
+        }
+        return filteredList;
     }
 
     @Override
@@ -304,9 +294,9 @@ public class AutoScheduleCommand extends UndoableCommand {
      */
     private static class ActivityWithCount implements Comparable<ActivityWithCount> {
         private Activity activity;
-        private int count;
+        private long count;
 
-        ActivityWithCount(Activity activity, int count) {
+        ActivityWithCount(Activity activity, long count) {
             this.activity = activity;
             this.count = count;
         }
@@ -315,13 +305,9 @@ public class AutoScheduleCommand extends UndoableCommand {
             return activity;
         }
 
-        public int getCount() {
-            return count;
-        }
-
         @Override
         public int compareTo(ActivityWithCount o) {
-            return count - o.count;
+            return (int) (count - o.count);
         }
     }
 

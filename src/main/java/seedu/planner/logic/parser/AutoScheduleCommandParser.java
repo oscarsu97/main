@@ -8,6 +8,7 @@ import static seedu.planner.logic.parser.CliSyntax.PREFIX_TAG;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import seedu.planner.commons.core.index.Index;
@@ -36,14 +37,14 @@ public class AutoScheduleCommandParser {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, AutoScheduleCommand.MESSAGE_USAGE));
         }
 
-        Address address = null;
+        Optional<Address> address = Optional.empty();
         List<Index> days = new ArrayList<>();
         //Contains either a Tag class or a Name class
         List<NameOrTagWithTime> draftSchedule;
 
         draftSchedule = getDraftSchedule(argMultimap, PREFIX_TAG, PREFIX_NAME);
         if (argMultimap.getValue(PREFIX_ADDRESS).isPresent()) {
-            address = ParserUtil.parseAddress(argMultimap.getValue(PREFIX_ADDRESS).get());
+            address = Optional.of(ParserUtil.parseAddress(argMultimap.getValue(PREFIX_ADDRESS).get()));
         }
         if (argMultimap.getValue(PREFIX_DAY).isPresent()) {
             days = ParserUtil.parseDaysToSchedule(argMultimap.getValue(PREFIX_DAY).get());
