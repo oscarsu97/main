@@ -108,10 +108,6 @@ public class AutoScheduleCommand extends UndoableCommand {
                 List<Activity> similarActivities = getSimilarActivities(activityListByLocation, draftSchedule.get(i));
                 List<ActivityWithCount> activitiesWithCount = updateCount(similarActivities, editDays,
                         activitiesForTheDay, dayIndex);
-                for (ActivityWithCount activity : activitiesWithCount) {
-                    System.out.println(activity.getActivity().getName() + " " + activity.getCount());
-                }
-                System.out.println(" =========================================================");
                 int nextIndex = i + 1;
                 OptionalInt nextTimingIndex = getNextTimingIndex(i, timeSchedule);
                 LocalTime currentTime = timeSchedule.get(i).get();
