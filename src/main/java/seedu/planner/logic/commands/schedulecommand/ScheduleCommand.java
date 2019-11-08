@@ -63,6 +63,7 @@ public class ScheduleCommand extends UndoableCommand {
             + " timeslot";
     public static final String MESSAGE_EXCEED_LIMIT_OF_OVERLAP = "Activity added to this time slot will "
             + "exceed the limit of 5 overlapping of activities";
+    public static final int MAX_LIMIT_OF_OVERLAP = 5;
     private final Index activityIndex;
     private final LocalTime startTime;
     private final Index dayIndex;
@@ -123,14 +124,13 @@ public class ScheduleCommand extends UndoableCommand {
         if (dayToEdit.getListOfActivityWithTime().contains(activityWithTimeToAdd)) {
             throw new CommandException(MESSAGE_DUPLICATE_ACTIVITY_SCHEDULED);
         }
-        int numOfOverLap = 0;
+        int numOfOverlap = 0;
         for (ActivityWithTime activity : dayToEdit.getListOfActivityWithTime()) {
             if (activityWithTimeToAdd.isOverlapping(activity)) {
-                System.out.println(numOfOverLap);
-                numOfOverLap++;
+                numOfOverlap++;
             }
         }
-        if (numOfOverLap >= 5) {
+        if (numOfOverlap >= MAX_LIMIT_OF_OVERLAP) {
             throw new CommandException(MESSAGE_EXCEED_LIMIT_OF_OVERLAP);
         }
         model.scheduleActivity(dayToEdit, activityWithTimeToAdd);
